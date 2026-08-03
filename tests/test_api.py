@@ -3,7 +3,8 @@ import logging
 
 from fastapi.testclient import TestClient
 
-from medibot.main import app
+from medibot.config import Settings
+from medibot.main import app, create_app
 
 client = TestClient(app)
 
@@ -36,10 +37,29 @@ def test_readiness_fails_closed_for_unapproved_policy() -> None:
         "status": "not_ready",
         "version": "0.1.0",
         "policy_version": "unapproved",
-        "reasons": ["policy_unapproved"],
+        "reasons": ["policy_unapproved", "medical_guidance_unavailable"],
     }
     assert response.headers["cache-control"] == "no-store"
     assert response.headers["x-request-id"]
+
+
+def test_approved_policy_does_not_create_false_readiness() -> None:
+    configured_app = create_app(
+        Settings(policy_version="reviewed-v1", app_version="1.2.3", _env_file=None)
+    )
+    configured_client = TestClient(configured_app)
+
+    health_response = configured_client.get("/v1/health")
+    readiness_response = configured_client.get("/v1/ready")
+
+    assert health_response.json()["version"] == "1.2.3"
+    assert readiness_response.status_code == 503
+    assert readiness_response.json() == {
+        "status": "not_ready",
+        "version": "1.2.3",
+        "policy_version": "reviewed-v1",
+        "reasons": ["medical_guidance_unavailable"],
+    }
 
 
 def test_messages_fail_closed_without_approved_safety_controls(caplog) -> None:
@@ -60,7 +80,7 @@ def test_messages_fail_closed_without_approved_safety_controls(caplog) -> None:
 
     event = json.loads(caplog.records[-1].message)
     assert event == {
-        "outcome": "blocked_unapproved",
+        "outcome": "blocked_unavailable",
         "policy_version": "unapproved",
         "request_id": payload["request_id"],
         "route": "service_unavailable",

@@ -54,7 +54,7 @@ Every response includes an opaque `X-Request-ID`. Audit events contain only that
 
 Runtime configuration is validated at startup. Unknown environments, unsafe request-size limits, malformed policy versions, and production debug mode stop the application instead of silently using unsafe values.
 
-`GET /v1/health` is a process-liveness check. `GET /v1/ready` is a separate traffic-readiness check and returns HTTP `503` while the policy version remains `unapproved`.
+`GET /v1/health` is a process-liveness check. `GET /v1/ready` is a separate traffic-readiness check and returns HTTP `503` while policy is unapproved or medical guidance remains unavailable. Changing only the policy-version string cannot create false readiness.
 
 `POST /v1/messages` has a per-process fixed-window rate-limit backstop. Production still requires a trusted edge or shared-store limiter because in-process counters are not distributed across instances.
 
