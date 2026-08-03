@@ -8,6 +8,8 @@
 4. Run available checks before committing.
 5. Use clear commit messages such as `docs: define safety boundaries` or `feat: add symptom intake validation`.
 
+On Windows, run `.\scripts\check.ps1`. On Linux, run `bash scripts/check.sh` with `PYTHON` pointing to the project environment when needed.
+
 ## Review Requirements
 
 Every change should be reviewed for the dimensions it actually touches:
@@ -36,4 +38,3 @@ Every change should be reviewed for the dimensions it actually touches:
 - [ ] No secrets or sensitive health data are included.
 - [ ] Tests cover the changed behavior.
 - [ ] Relevant `DOC` files and change log are updated.
-

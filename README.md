@@ -75,6 +75,14 @@ Dependabot checks Python and GitHub Actions dependencies weekly. Updates still r
 
 The pytest command measures source coverage and fails below 90%. The current measured baseline is 94%; the floor prevents material regression without encouraging low-value tests solely to claim 100%.
 
+Run the complete local verification sequence with one command:
+
+```powershell
+.\scripts\check.ps1
+```
+
+Linux and CI use `PYTHON=.venv/bin/python bash scripts/check.sh`. Both scripts run lint, tests/coverage, dependency consistency, vulnerability audit, and package build in the same order.
+
 ## Container
 
 ```powershell

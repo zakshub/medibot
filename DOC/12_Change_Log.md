@@ -31,3 +31,5 @@
 27. Added an operational runbook for startup, signals, incidents, safe logs, and rollback
 28. Added pull-request and issue intake controls with explicit medical-safety and sensitive-data gates
 29. Added repository ownership rules and an immutable release-evidence template
+30. Added cross-platform one-command verification scripts and aligned CI to the Linux script
+31. Disabled pytest's nonessential cache provider to avoid synced-drive cache races
