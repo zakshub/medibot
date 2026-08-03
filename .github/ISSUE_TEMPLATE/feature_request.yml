@@ -1,0 +1,65 @@
+name: Feature request
+description: Propose a bounded product or engineering change without assuming medical approval.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A feature request is not medical, legal, privacy, or release approval. Do not include real health data or user conversations.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Describe the user or operational problem without prescribing a solution.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Required outcome
+      description: State measurable acceptance criteria.
+    validations:
+      required: true
+  - type: dropdown
+    id: medical_scope
+    attributes:
+      label: Does this change medical behavior or claims?
+      options:
+        - "No"
+        - "Yes - clinical safety review required"
+        - "Unknown - treat as requiring review"
+    validations:
+      required: true
+  - type: dropdown
+    id: data_scope
+    attributes:
+      label: Does this change data collection, storage, transfer, retention, or deletion?
+      options:
+        - "No"
+        - "Yes - privacy and security review required"
+        - "Unknown - treat as requiring review"
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks and failure behavior
+      description: Cover unsafe output, privacy, abuse, outages, rollback, and compatibility where relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Simpler alternatives considered
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Data confirmation
+      options:
+        - label: I confirm this request contains no real personal or health information.
+          required: true
+

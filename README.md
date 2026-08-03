@@ -94,6 +94,8 @@ Compose binds only to `127.0.0.1`, drops Linux capabilities, blocks privilege es
 
 Operational startup, signal interpretation, privacy incidents, readiness bypass, rate-limit failure, and rollback procedures are defined in [DOC/22_Operational_Runbook.md](DOC/22_Operational_Runbook.md).
 
+GitHub pull requests and issues use structured templates. Public submissions must use synthetic data; exploitable security or sensitive-data issues must use private vulnerability reporting.
+
 ## Safety Boundary
 
 Until a reviewed product specification exists, Medibot must:

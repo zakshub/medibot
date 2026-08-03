@@ -1,0 +1,63 @@
+name: Bug report
+description: Report reproducible incorrect or unsafe behavior using synthetic data only.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not submit real health information, names, contact details, credentials, private logs, or production conversations. Use synthetic examples. Report exploitable security issues through private vulnerability reporting.
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact category
+      options:
+        - Functional correctness
+        - Medical safety
+        - Privacy
+        - Security
+        - Reliability or performance
+        - Documentation
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Commit or version
+      placeholder: Commit SHA or immutable version identifier
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Actual behavior
+      description: Use synthetic input and bounded output. Remove identifiers and secrets.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Provide the smallest safe reproduction using synthetic data.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Non-sensitive evidence
+      description: Include bounded error codes, request IDs, versions, and test output only.
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Data confirmation
+      options:
+        - label: I confirm this report contains no real personal or health information, credentials, or private logs.
+          required: true
+

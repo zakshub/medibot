@@ -29,3 +29,4 @@
 25. Added a non-root multi-stage container, liveness healthcheck, Docker CI build, and deployment boundaries
 26. Added a hardened local Compose baseline and CI configuration validation
 27. Added an operational runbook for startup, signals, incidents, safe logs, and rollback
+28. Added pull-request and issue intake controls with explicit medical-safety and sensitive-data gates
