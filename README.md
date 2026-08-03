@@ -108,6 +108,8 @@ Every release candidate must complete [DOC/23_Release_Evidence_Template.md](DOC/
 
 Product decisions are tracked in [DOC/24_Product_Decision_Register.md](DOC/24_Product_Decision_Register.md). Reviewed content must satisfy [DOC/25_Content_Provenance_And_Approval.md](DOC/25_Content_Provenance_And_Approval.md); the current repository intentionally returns no medical content.
 
+Safety policy must satisfy [DOC/26_Policy_Versioning_And_Approval.md](DOC/26_Policy_Versioning_And_Approval.md). The application defaults to an empty policy repository, and a policy-version environment string cannot activate medical behavior.
+
 ## Safety Boundary
 
 Until a reviewed product specification exists, Medibot must:

@@ -8,6 +8,7 @@ from httpx import ASGITransport, AsyncClient
 from medibot.config import Settings
 from medibot.content import EmptyContentRepository, InMemoryContentRepository
 from medibot.main import app, create_app
+from medibot.policy import EmptyPolicyRepository
 
 pytestmark = pytest.mark.anyio
 
@@ -30,6 +31,7 @@ def test_app_factory_defaults_to_empty_content_repository() -> None:
     configured_app = create_app(Settings(_env_file=None))
 
     assert isinstance(configured_app.state.content_repository, EmptyContentRepository)
+    assert isinstance(configured_app.state.policy_repository, EmptyPolicyRepository)
 
 
 def test_app_factory_preserves_injected_content_repository() -> None:

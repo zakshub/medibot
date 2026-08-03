@@ -31,6 +31,7 @@ Last updated: 2026-08-03
 23. [23_Release_Evidence_Template.md](./23_Release_Evidence_Template.md)
 24. [24_Product_Decision_Register.md](./24_Product_Decision_Register.md)
 25. [25_Content_Provenance_And_Approval.md](./25_Content_Provenance_And_Approval.md)
+26. [26_Policy_Versioning_And_Approval.md](./26_Policy_Versioning_And_Approval.md)
 
 ## Folder Purpose
 

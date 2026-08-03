@@ -40,3 +40,4 @@
 36. Extracted deterministic unavailable responses and added a fail-closed empty content repository
 37. Added a deterministic reviewed-content reference repository with duplicate, locale, expiry, and latest-version controls
 38. Added explicit application-factory content repository injection with a fail-closed default
+39. Added versioned policy approval/effective-window contracts and a fail-closed policy repository

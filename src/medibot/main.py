@@ -13,6 +13,7 @@ from medibot.models import (
     MessageResponse,
     ReadinessResponse,
 )
+from medibot.policy import EmptyPolicyRepository, PolicyRepository
 from medibot.rate_limit import FixedWindowRateLimitMiddleware
 from medibot.responses import unavailable_response
 
@@ -20,11 +21,13 @@ from medibot.responses import unavailable_response
 def create_app(
     app_settings: Settings | None = None,
     content_repository: ContentRepository | None = None,
+    policy_repository: PolicyRepository | None = None,
 ) -> FastAPI:
     settings = app_settings or get_settings()
     repository = (
         content_repository if content_repository is not None else EmptyContentRepository()
     )
+    policies = policy_repository if policy_repository is not None else EmptyPolicyRepository()
     application = FastAPI(
         title=settings.app_name,
         version=settings.app_version,
@@ -33,6 +36,7 @@ def create_app(
     )
     application.state.settings = settings
     application.state.content_repository = repository
+    application.state.policy_repository = policies
     application.add_middleware(
         RequestBodyLimitMiddleware,
         max_body_bytes=settings.max_request_body_bytes,
