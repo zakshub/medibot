@@ -36,3 +36,5 @@
 32. Added explicit cross-platform line-ending policy for source, configuration, docs, and scripts
 33. Added targeted ASGI tests for chunked overflow, middleware pass-through, header preservation, and limiter expiry
 34. Added regression coverage proving malformed content length cannot bypass streamed body limits
+35. Added the blocking product decision register and reviewed-content provenance contract
+36. Extracted deterministic unavailable responses and added a fail-closed empty content repository

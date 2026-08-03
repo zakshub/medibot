@@ -106,6 +106,8 @@ GitHub pull requests and issues use structured templates. Public submissions mus
 
 Every release candidate must complete [DOC/23_Release_Evidence_Template.md](DOC/23_Release_Evidence_Template.md) against one immutable commit and image. The default release decision remains blocked while required evidence or approvals are missing.
 
+Product decisions are tracked in [DOC/24_Product_Decision_Register.md](DOC/24_Product_Decision_Register.md). Reviewed content must satisfy [DOC/25_Content_Provenance_And_Approval.md](DOC/25_Content_Provenance_And_Approval.md); the current repository intentionally returns no medical content.
+
 ## Safety Boundary
 
 Until a reviewed product specification exists, Medibot must:
