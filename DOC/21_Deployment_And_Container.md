@@ -21,6 +21,8 @@ docker run --rm --publish 8000:8000 medibot:local
 
 The container sets `MEDIBOT_ENVIRONMENT=production` and `MEDIBOT_DEBUG=false`. Secrets must be injected by an approved runtime secret manager, never baked into the image or passed in committed files.
 
+`compose.yaml` provides a hardened local baseline with localhost-only binding, a read-only root filesystem, temporary bounded `/tmp`, all Linux capabilities dropped, no-new-privileges, and process/resource limits. It is intentionally not presented as a production orchestrator configuration.
+
 ## 3. Health and Readiness
 
 The Docker healthcheck uses `/v1/health` only to confirm that the process can answer locally. Traffic routing must use `/v1/ready`, which remains HTTP `503` while medical guidance is unavailable.
@@ -45,4 +47,3 @@ Before any production deployment:
 ## 5. CI Boundary
 
 CI builds the image but does not publish or deploy it. Publication requires an immutable tag, provenance, vulnerability scan, approval evidence, and an approved registry. A successful image build is not release approval.
-

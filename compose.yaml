@@ -1,0 +1,27 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: medibot:local
+    environment:
+      MEDIBOT_ENVIRONMENT: production
+      MEDIBOT_DEBUG: "false"
+      MEDIBOT_POLICY_VERSION: unapproved
+      MEDIBOT_MAX_REQUEST_BODY_BYTES: "16384"
+      MEDIBOT_RATE_LIMIT_REQUESTS: "60"
+      MEDIBOT_RATE_LIMIT_WINDOW_SECONDS: "60"
+    ports:
+      - "127.0.0.1:8000:8000"
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 100
+    mem_limit: 256m
+    cpus: 1.0
+    restart: unless-stopped
+

@@ -84,6 +84,14 @@ docker run --rm --publish 8000:8000 medibot:local
 
 The image runs as a non-root user and its healthcheck verifies process liveness only. Deployment traffic must use `/v1/ready`; the service remains intentionally not ready for medical guidance.
 
+For the hardened local baseline:
+
+```powershell
+docker compose up --build
+```
+
+Compose binds only to `127.0.0.1`, drops Linux capabilities, blocks privilege escalation, uses a read-only root filesystem, and applies bounded process, memory, and CPU limits. It is not a production orchestration manifest.
+
 ## Safety Boundary
 
 Until a reviewed product specification exists, Medibot must:
