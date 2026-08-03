@@ -92,6 +92,8 @@ docker compose up --build
 
 Compose binds only to `127.0.0.1`, drops Linux capabilities, blocks privilege escalation, uses a read-only root filesystem, and applies bounded process, memory, and CPU limits. It is not a production orchestration manifest.
 
+Operational startup, signal interpretation, privacy incidents, readiness bypass, rate-limit failure, and rollback procedures are defined in [DOC/22_Operational_Runbook.md](DOC/22_Operational_Runbook.md).
+
 ## Safety Boundary
 
 Until a reviewed product specification exists, Medibot must:
