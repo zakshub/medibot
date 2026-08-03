@@ -17,6 +17,7 @@ from medibot.models import (
 from medibot.policy import EmptyPolicyRepository, PolicyRepository
 from medibot.rate_limit import FixedWindowRateLimitMiddleware
 from medibot.responses import unavailable_response
+from medibot.routing import EmergencySignalDetector, EmptyEmergencySignalDetector
 
 
 def create_app(
@@ -24,6 +25,7 @@ def create_app(
     content_repository: ContentRepository | None = None,
     policy_repository: PolicyRepository | None = None,
     emergency_registry: EmergencyResourceRegistry | None = None,
+    emergency_signal_detector: EmergencySignalDetector | None = None,
 ) -> FastAPI:
     settings = app_settings or get_settings()
     repository = (
@@ -35,6 +37,11 @@ def create_app(
         if emergency_registry is not None
         else EmptyEmergencyResourceRegistry()
     )
+    emergency_detector = (
+        emergency_signal_detector
+        if emergency_signal_detector is not None
+        else EmptyEmergencySignalDetector()
+    )
     application = FastAPI(
         title=settings.app_name,
         version=settings.app_version,
@@ -45,6 +52,7 @@ def create_app(
     application.state.content_repository = repository
     application.state.policy_repository = policies
     application.state.emergency_registry = emergency_resources
+    application.state.emergency_signal_detector = emergency_detector
     application.add_middleware(
         RequestBodyLimitMiddleware,
         max_body_bytes=settings.max_request_body_bytes,

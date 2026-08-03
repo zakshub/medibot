@@ -33,6 +33,7 @@ Last updated: 2026-08-03
 25. [25_Content_Provenance_And_Approval.md](./25_Content_Provenance_And_Approval.md)
 26. [26_Policy_Versioning_And_Approval.md](./26_Policy_Versioning_And_Approval.md)
 27. [27_Emergency_Resource_Registry.md](./27_Emergency_Resource_Registry.md)
+28. [28_Emergency_Signal_Detection.md](./28_Emergency_Signal_Detection.md)
 
 ## Folder Purpose
 

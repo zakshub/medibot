@@ -10,6 +10,7 @@ from medibot.content import EmptyContentRepository, InMemoryContentRepository
 from medibot.emergency import EmptyEmergencyResourceRegistry
 from medibot.main import app, create_app
 from medibot.policy import EmptyPolicyRepository
+from medibot.routing import EmptyEmergencySignalDetector
 
 pytestmark = pytest.mark.anyio
 
@@ -36,6 +37,10 @@ def test_app_factory_defaults_to_empty_content_repository() -> None:
     assert isinstance(
         configured_app.state.emergency_registry,
         EmptyEmergencyResourceRegistry,
+    )
+    assert isinstance(
+        configured_app.state.emergency_signal_detector,
+        EmptyEmergencySignalDetector,
     )
 
 

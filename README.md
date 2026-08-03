@@ -112,6 +112,8 @@ Safety policy must satisfy [DOC/26_Policy_Versioning_And_Approval.md](DOC/26_Pol
 
 Emergency resources must satisfy [DOC/27_Emergency_Resource_Registry.md](DOC/27_Emergency_Resource_Registry.md). The application defaults to an empty emergency registry; unknown country or locale combinations return no resource, and tests use synthetic emergency examples only.
 
+Emergency signal detection must satisfy [DOC/28_Emergency_Signal_Detection.md](DOC/28_Emergency_Signal_Detection.md). The default detector is unavailable and fail-closed; the keyword detector exists only as deterministic test plumbing, not production triage.
+
 ## Safety Boundary
 
 Until a reviewed product specification exists, Medibot must:
