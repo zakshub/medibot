@@ -6,6 +6,7 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 from medibot.config import Settings
+from medibot.content import EmptyContentRepository, InMemoryContentRepository
 from medibot.main import app, create_app
 
 pytestmark = pytest.mark.anyio
@@ -23,6 +24,19 @@ async def test_health_contract(client: AsyncClient) -> None:
     assert response.status_code == 200
     assert response.json() == {"status": "ok", "version": "0.1.0"}
     assert response.headers["x-request-id"]
+
+
+def test_app_factory_defaults_to_empty_content_repository() -> None:
+    configured_app = create_app(Settings(_env_file=None))
+
+    assert isinstance(configured_app.state.content_repository, EmptyContentRepository)
+
+
+def test_app_factory_preserves_injected_content_repository() -> None:
+    repository = InMemoryContentRepository([])
+    configured_app = create_app(Settings(_env_file=None), content_repository=repository)
+
+    assert configured_app.state.content_repository is repository
 
 
 async def test_responses_include_security_headers(client: AsyncClient) -> None:

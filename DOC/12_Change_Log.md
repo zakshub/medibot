@@ -39,3 +39,4 @@
 35. Added the blocking product decision register and reviewed-content provenance contract
 36. Extracted deterministic unavailable responses and added a fail-closed empty content repository
 37. Added a deterministic reviewed-content reference repository with duplicate, locale, expiry, and latest-version controls
+38. Added explicit application-factory content repository injection with a fail-closed default

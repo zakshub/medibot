@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 
 from medibot.audit import AuditEvent, emit_audit_event
 from medibot.config import Settings, get_settings
+from medibot.content import ContentRepository, EmptyContentRepository
 from medibot.middleware import RequestBodyLimitMiddleware, SecurityHeadersMiddleware
 from medibot.models import (
     ErrorResponse,
@@ -16,8 +17,14 @@ from medibot.rate_limit import FixedWindowRateLimitMiddleware
 from medibot.responses import unavailable_response
 
 
-def create_app(app_settings: Settings | None = None) -> FastAPI:
+def create_app(
+    app_settings: Settings | None = None,
+    content_repository: ContentRepository | None = None,
+) -> FastAPI:
     settings = app_settings or get_settings()
+    repository = (
+        content_repository if content_repository is not None else EmptyContentRepository()
+    )
     application = FastAPI(
         title=settings.app_name,
         version=settings.app_version,
@@ -25,6 +32,7 @@ def create_app(app_settings: Settings | None = None) -> FastAPI:
         debug=settings.debug,
     )
     application.state.settings = settings
+    application.state.content_repository = repository
     application.add_middleware(
         RequestBodyLimitMiddleware,
         max_body_bytes=settings.max_request_body_bytes,

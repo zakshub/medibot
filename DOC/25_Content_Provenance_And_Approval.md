@@ -25,6 +25,8 @@ Unknown fields, missing approval evidence, naive timestamps, expired records, dr
 
 `InMemoryContentRepository` is a deterministic reference implementation for tests or explicitly approved static records. It rejects duplicate ID/locale/version tuples, isolates locales, filters drafts/retired/expired records, and selects the most recently approved current version. It is not the production publication system.
 
+The application factory receives the repository as an explicit dependency and stores it in application state. When no repository is supplied, it creates `EmptyContentRepository`. Injecting a repository does not by itself change readiness or enable medical responses.
+
 ## 4. Publication Workflow
 
 1. Create a draft from an identified authoritative source.
