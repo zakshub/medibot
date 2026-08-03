@@ -43,3 +43,4 @@
 39. Added versioned policy approval/effective-window contracts and a fail-closed policy repository
 40. Added a fail-closed emergency resource registry contract with country, locale, approval, expiry, and duplicate-version controls
 41. Added an emergency signal detection contract with fail-closed default behavior and synthetic keyword reference tests
+42. Added an emergency response composer contract that requires both a possible emergency signal and an approved resource

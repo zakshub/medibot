@@ -114,6 +114,8 @@ Emergency resources must satisfy [DOC/27_Emergency_Resource_Registry.md](DOC/27_
 
 Emergency signal detection must satisfy [DOC/28_Emergency_Signal_Detection.md](DOC/28_Emergency_Signal_Detection.md). The default detector is unavailable and fail-closed; the keyword detector exists only as deterministic test plumbing, not production triage.
 
+Emergency responses must satisfy [DOC/29_Emergency_Response_Composer.md](DOC/29_Emergency_Response_Composer.md). A response can use only bounded detector decisions and approved emergency resources; the live message endpoint remains unavailable for health guidance.
+
 ## Safety Boundary
 
 Until a reviewed product specification exists, Medibot must:
