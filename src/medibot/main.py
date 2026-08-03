@@ -6,6 +6,7 @@ from medibot.audit import AuditEvent, emit_audit_event
 from medibot.config import Settings, get_settings
 from medibot.middleware import RequestBodyLimitMiddleware, SecurityHeadersMiddleware
 from medibot.models import (
+    ErrorResponse,
     HealthResponse,
     MessageRequest,
     MessageResponse,
@@ -82,6 +83,11 @@ def create_app(app_settings: Settings | None = None) -> FastAPI:
         "/v1/messages",
         response_model=MessageResponse,
         status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        responses={
+            status.HTTP_413_CONTENT_TOO_LARGE: {"model": ErrorResponse},
+            status.HTTP_422_UNPROCESSABLE_CONTENT: {"model": ErrorResponse},
+            status.HTTP_429_TOO_MANY_REQUESTS: {"model": ErrorResponse},
+        },
     )
     def create_message(request: Request, payload: MessageRequest) -> JSONResponse:
         # Product scope and safety controls are not approved, so the API must fail closed.

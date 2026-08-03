@@ -109,6 +109,8 @@ Initial error codes:
 | SAFETY_SERVICE_UNAVAILABLE | 503 | Required safety control unavailable |
 | SERVICE_UNAVAILABLE | 503 | Normal response cannot be produced safely |
 
+The generated OpenAPI contract explicitly documents `413`, `422`, `429`, and `503` behavior for `/v1/messages`. Automated schema tests block accidental removal of these responses or addition of raw input fields to the bounded error model.
+
 ## 7. Minimal Internal Safety Decision
 
 ```json
@@ -171,4 +173,3 @@ No `User`, `Patient`, `MedicalRecord`, or `ConversationHistory` entity is approv
 - tests proving raw input is absent from errors and audit events;
 - compatibility tests against supported client versions;
 - failure tests for unavailable model, content, safety, and audit dependencies.
-

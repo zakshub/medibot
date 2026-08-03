@@ -23,3 +23,4 @@
 19. Added dependency consistency, vulnerability auditing, and weekly update automation
 20. Added a per-process message-rate backstop, sanitized 429 contract, and production abuse-control boundary
 21. Added an injectable application factory and fixed false readiness from policy-only configuration
+22. Added explicit OpenAPI error contracts and schema-regression tests

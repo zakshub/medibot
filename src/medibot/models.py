@@ -39,6 +39,16 @@ class ReadinessResponse(BaseModel):
     reasons: list[str] = Field(default_factory=list)
 
 
+class ErrorDetail(BaseModel):
+    code: str
+    message: str
+
+
+class ErrorResponse(BaseModel):
+    request_id: str
+    error: ErrorDetail
+
+
 class MessageResponse(BaseModel):
     request_id: str
     route: MessageRoute

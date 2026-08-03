@@ -58,6 +58,8 @@ Runtime configuration is validated at startup. Unknown environments, unsafe requ
 
 `POST /v1/messages` has a per-process fixed-window rate-limit backstop. Production still requires a trusted edge or shared-store limiter because in-process counters are not distributed across instances.
 
+FastAPI publishes the versioned OpenAPI contract at `/openapi.json`. Regression tests pin the public routes, bounded error responses, strict request schema, and absence of raw health-input fields from error schemas.
+
 ## Automated Checks
 
 Every push and pull request to `master` runs:
