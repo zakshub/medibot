@@ -17,6 +17,7 @@ from medibot.policy import (
     PolicyVersion,
 )
 from medibot.routing import EmptyEmergencySignalDetector, KeywordEmergencySignalDetector
+from medibot.scope import EmptyScopeSignalDetector, KeywordScopeSignalDetector
 
 NOW = datetime(2026, 8, 5, tzinfo=UTC)
 
@@ -33,6 +34,12 @@ def approved_policy(
         permitted_detector_versions=(
             frozenset({"synthetic-v1"})
             if MessageRoute.EMERGENCY in permitted_routes
+            else frozenset()
+        ),
+        permitted_scope_detector_versions=(
+            frozenset({"synthetic-scope-v1"})
+            if permitted_routes
+            & {MessageRoute.UNSUPPORTED, MessageRoute.PROHIBITED}
             else frozenset()
         ),
         approved_by="Synthetic safety reviewer",
@@ -85,6 +92,18 @@ def emergency_registry(**resource_overrides) -> InMemoryEmergencyResourceRegistr
     )
 
 
+def scope_detector() -> KeywordScopeSignalDetector:
+    return KeywordScopeSignalDetector(
+        unsupported_keywords={
+            "synthetic outside scope": frozenset({"outside_scope"})
+        },
+        prohibited_keywords={
+            "synthetic prohibited": frozenset({"disallowed_request"})
+        },
+        detector_version="synthetic-scope-v1",
+    )
+
+
 def payload(**overrides) -> MessageRequest:
     values = {
         "message": "This is a synthetic danger example.",
@@ -100,11 +119,13 @@ def orchestrator(
     policies=None,
     detector=None,
     registry=None,
+    scope=None,
 ) -> MessageOrchestrator:
     return MessageOrchestrator(
         policy_repository=policies if policies is not None else policy_repository(),
         emergency_signal_detector=detector if detector is not None else emergency_detector(),
         emergency_registry=registry if registry is not None else emergency_registry(),
+        scope_signal_detector=scope if scope is not None else EmptyScopeSignalDetector(),
         fallback_policy_version="unapproved",
     )
 
@@ -169,6 +190,130 @@ def test_orchestrator_keeps_normal_medical_guidance_locked() -> None:
     assert result.status_code == 503
     assert result.outcome == ProcessingOutcome.NO_EMERGENCY_SIGNAL
     assert result.response.route == MessageRoute.SERVICE_UNAVAILABLE
+
+
+def test_orchestrator_returns_unsupported_after_emergency_no_signal() -> None:
+    policies = policy_repository(
+        frozenset({MessageRoute.EMERGENCY, MessageRoute.UNSUPPORTED})
+    )
+    result = orchestrator(policies=policies, scope=scope_detector()).process(
+        "request-123",
+        payload(message="Synthetic outside scope example."),
+    )
+
+    assert result.status_code == 200
+    assert result.outcome == ProcessingOutcome.UNSUPPORTED_RETURNED
+    assert result.response.route == MessageRoute.UNSUPPORTED
+    assert result.response.sources == []
+
+
+def test_orchestrator_returns_prohibited_after_emergency_no_signal() -> None:
+    policies = policy_repository(
+        frozenset({MessageRoute.EMERGENCY, MessageRoute.PROHIBITED})
+    )
+    result = orchestrator(policies=policies, scope=scope_detector()).process(
+        "request-123",
+        payload(message="Synthetic prohibited example."),
+    )
+
+    assert result.status_code == 200
+    assert result.outcome == ProcessingOutcome.PROHIBITED_RETURNED
+    assert result.response.route == MessageRoute.PROHIBITED
+
+
+def test_orchestrator_requires_available_scope_detector() -> None:
+    policies = policy_repository(
+        frozenset({MessageRoute.EMERGENCY, MessageRoute.UNSUPPORTED})
+    )
+    result = orchestrator(policies=policies).process(
+        "request-123",
+        payload(message="Synthetic outside scope example."),
+    )
+
+    assert result.status_code == 503
+    assert result.outcome == ProcessingOutcome.SCOPE_DETECTOR_UNAVAILABLE
+
+
+def test_orchestrator_keeps_medical_guidance_locked_after_scope_no_signal() -> None:
+    policies = policy_repository(
+        frozenset({MessageRoute.EMERGENCY, MessageRoute.UNSUPPORTED})
+    )
+    result = orchestrator(policies=policies, scope=scope_detector()).process(
+        "request-123",
+        payload(message="Synthetic ordinary example."),
+    )
+
+    assert result.status_code == 503
+    assert result.outcome == ProcessingOutcome.NO_EMERGENCY_SIGNAL
+    assert result.response.route == MessageRoute.SERVICE_UNAVAILABLE
+
+
+def test_orchestrator_requires_policy_pinned_scope_detector_version() -> None:
+    policies = policy_repository(
+        frozenset({MessageRoute.EMERGENCY, MessageRoute.UNSUPPORTED})
+    )
+    unreviewed_detector = KeywordScopeSignalDetector(
+        unsupported_keywords={
+            "synthetic outside scope": frozenset({"outside_scope"})
+        },
+        prohibited_keywords={},
+        detector_version="unreviewed-scope-v2",
+    )
+    result = orchestrator(policies=policies, scope=unreviewed_detector).process(
+        "request-123",
+        payload(message="Synthetic outside scope example."),
+    )
+
+    assert result.status_code == 503
+    assert result.outcome == ProcessingOutcome.SCOPE_DETECTOR_VERSION_NOT_PERMITTED
+
+
+def test_orchestrator_requires_detected_scope_route_permission() -> None:
+    policies = policy_repository(
+        frozenset({MessageRoute.EMERGENCY, MessageRoute.UNSUPPORTED})
+    )
+    result = orchestrator(policies=policies, scope=scope_detector()).process(
+        "request-123",
+        payload(message="Synthetic prohibited example."),
+    )
+
+    assert result.status_code == 503
+    assert result.outcome == ProcessingOutcome.SCOPE_ROUTE_NOT_PERMITTED
+
+
+def test_orchestrator_contains_scope_detector_failure() -> None:
+    class ExplodingScopeDetector:
+        def evaluate(self, message: str, locale: str):
+            raise RuntimeError(f"private scope detail: {message}")
+
+    policies = policy_repository(
+        frozenset({MessageRoute.EMERGENCY, MessageRoute.UNSUPPORTED})
+    )
+    result = orchestrator(policies=policies, scope=ExplodingScopeDetector()).process(
+        "request-123",
+        payload(message="Synthetic outside scope example."),
+    )
+
+    assert result.status_code == 503
+    assert result.outcome == ProcessingOutcome.SCOPE_DEPENDENCY_FAILURE
+
+
+def test_emergency_route_precedes_scope_detection() -> None:
+    class ExplodingScopeDetector:
+        def evaluate(self, message: str, locale: str):
+            raise AssertionError("scope detector must not run for emergency signal")
+
+    policies = policy_repository(
+        frozenset({MessageRoute.EMERGENCY, MessageRoute.PROHIBITED})
+    )
+    result = orchestrator(policies=policies, scope=ExplodingScopeDetector()).process(
+        "request-123",
+        payload(message="Synthetic danger and synthetic prohibited example."),
+    )
+
+    assert result.status_code == 200
+    assert result.outcome == ProcessingOutcome.EMERGENCY_RESOURCE_RETURNED
+    assert result.response.route == MessageRoute.EMERGENCY
 
 
 def test_orchestrator_requires_approved_emergency_resource() -> None:

@@ -35,6 +35,10 @@ class PolicyVersion(BaseModel):
         default_factory=frozenset,
         max_length=32,
     )
+    permitted_scope_detector_versions: frozenset[DetectorVersion] = Field(
+        default_factory=frozenset,
+        max_length=32,
+    )
     approved_by: str | None = Field(default=None, max_length=200)
     approved_at: datetime | None = None
     effective_at: datetime | None = None
@@ -74,6 +78,15 @@ class PolicyVersion(BaseModel):
             raise ValueError("emergency route requires permitted detector versions")
         if not emergency_permitted and self.permitted_detector_versions:
             raise ValueError("detector versions are only valid with the emergency route")
+
+        scope_permitted = bool(
+            self.permitted_routes
+            & {MessageRoute.UNSUPPORTED, MessageRoute.PROHIBITED}
+        )
+        if scope_permitted and not self.permitted_scope_detector_versions:
+            raise ValueError("scope routes require permitted scope detector versions")
+        if not scope_permitted and self.permitted_scope_detector_versions:
+            raise ValueError("scope detector versions require a scope route")
         return self
 
     def is_active(self, at: datetime | None = None) -> bool:

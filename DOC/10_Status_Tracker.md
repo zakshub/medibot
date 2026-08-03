@@ -4,23 +4,24 @@ Last updated: 2026-08-03
 
 ## 10.1 Current Overall Status
 
-Estimated implementation progress: **47% done, 53% remaining**.
+Estimated implementation progress: **50% done, 50% remaining**.
 
 These percentages are planning estimates, not release evidence. A high implementation percentage cannot replace product, clinical, privacy, security, or legal approval.
 
 | Workstream | Done | Remaining | Current evidence |
 | --- | ---: | ---: | --- |
-| Documentation baseline | 96% | 4% | Numbered documentation, runbook, contracts, evaluation, and release templates exist |
+| Documentation baseline | 97% | 3% | Numbered documentation, runbook, contracts, evaluation, routing, and release templates exist |
 | Repository, CI, and testing | 93% | 7% | Automated lint, tests, audit, build, container, evaluation, and UI structure checks exist |
-| Backend API foundation | 72% | 28% | Versioned health, readiness, message, validation, orchestration, and audit contracts exist |
-| Safety architecture | 65% | 35% | Fail-closed policy, content, emergency, orchestration, response, and evaluation boundaries exist |
+| Backend API foundation | 80% | 20% | Versioned health, readiness, message, validation, emergency/scope orchestration, and audit contracts exist |
+| Safety architecture | 72% | 28% | Fail-closed policy, content, emergency, scope, orchestration, response, and evaluation boundaries exist |
 | Emergency routing | 70% | 30% | Guarded pipeline and engineering evaluation exist; production detector, resources, and approval do not |
 | Safety evaluation | 35% | 65% | Versioned synthetic harness exists; representative clinically reviewed suites and thresholds do not |
+| Scope and refusal routing | 55% | 45% | Guarded unsupported/prohibited contracts exist; approved real scope definitions and evaluation do not |
 | Medical content system | 30% | 70% | Reviewed-content repository exists; approved production content does not |
-| Actual medical bot behavior | 15% | 85% | Guarded emergency routing exists; normal medical guidance remains disabled |
+| Actual medical bot behavior | 25% | 75% | Guarded emergency and refusal routing exist; normal medical guidance remains disabled |
 | Medical bot UI | 45% | 55% | Responsive accessible chat/status shell exists; approved complete product flows do not |
 | Product, clinical, and legal decisions | 15% | 85% | Decision register exists; accountable approvals are missing |
-| Production readiness | 25% | 75% | Container, runbook, failure handling, report schema, and UI privacy controls exist; release evidence and approvals do not |
+| Production readiness | 27% | 73% | Container, runbook, bounded route handling, reports, and UI privacy controls exist; release evidence and approvals do not |
 
 ## 10.2 Completed
 
@@ -33,12 +34,13 @@ These percentages are planning estimates, not release evidence. A high implement
 7. Connected guarded emergency orchestration behind active-policy, location, detector, and approved-resource gates.
 8. Added versioned synthetic emergency datasets, metrics, threshold verdicts, and privacy-safe reports.
 9. Removed assumed user location and added UI accessibility, privacy, status-isolation, and tablet-layout regression controls.
+10. Added emergency-first, policy-pinned unsupported and prohibited routing with bounded responses and audits.
 
 ## 10.3 In Progress
 
 1. Expand emergency challenges by approved locale without real patient data.
-2. Add explicit unsupported and prohibited route orchestration.
-3. Extend UI states for approved information, urgent, emergency, unsupported, and prohibited routes.
+2. Define and evaluate real unsupported and prohibited categories after product approval.
+3. Extend UI interaction evidence for approved emergency, unsupported, and prohibited routes.
 4. Define production adapter publication and rollback controls.
 
 ## 10.4 Blockers

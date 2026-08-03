@@ -2,7 +2,7 @@
 
 ## 31.1 Purpose
 
-`MessageOrchestrator` connects existing safety contracts without allowing configuration strings or partial dependencies to activate medical behavior. It supports only a bounded emergency-resource path. Normal medical information, diagnosis, treatment, and severity assessment remain disabled.
+`MessageOrchestrator` connects existing safety contracts without allowing configuration strings or partial dependencies to activate medical behavior. It supports a bounded emergency-resource path followed by bounded unsupported or prohibited handling. Normal medical information, diagnosis, treatment, and severity assessment remain disabled.
 
 ## 31.2 Gate Order
 
@@ -16,9 +16,12 @@ The orchestrator evaluates gates in this order:
 6. Reject unavailable and no-signal decisions.
 7. Load an approved resource for the exact country and locale.
 8. Confirm the returned resource matches the requested country and locale.
-9. Compose the bounded emergency response.
+9. Compose the bounded emergency response and stop processing; or, only after emergency `no_signal`, continue to scope detection.
+10. Require an enabled scope route and evaluate the scope detector.
+11. Confirm the exact scope-detector version and returned route are permitted by policy.
+12. Return a bounded unsupported or prohibited response, otherwise fail closed.
 
-The order is intentional. Policy, route, and location failures stop before detector processing. Resource lookup occurs only after a possible-emergency decision.
+The order is intentional. Policy, route, and location failures stop before detector processing. Resource lookup occurs only after a possible-emergency decision. Scope detection never runs for a possible emergency and cannot override emergency guidance.
 
 ## 31.3 HTTP Behavior
 
@@ -43,6 +46,12 @@ Audit events may record only these orchestration outcomes:
 10. `blocked_detector_dependency_failure`
 11. `blocked_registry_dependency_failure`
 12. `emergency_resource_returned`
+13. `blocked_scope_detector_unavailable`
+14. `blocked_scope_detector_version_not_permitted`
+15. `blocked_scope_route_not_permitted`
+16. `blocked_scope_dependency_failure`
+17. `unsupported_returned`
+18. `prohibited_returned`
 
 No user message, detector match, category, resource instruction, or exception text enters the audit event.
 
@@ -60,7 +69,7 @@ The default application injects:
 2. `EmptyEmergencySignalDetector`;
 3. `EmptyEmergencyResourceRegistry`.
 
-Therefore the default endpoint remains locked. Tests activate the path only with synthetic immutable policies, detector phrases, resources, clocks, and `example.invalid` sources.
+The default scope detector is also unavailable. Therefore the default endpoint remains locked. Tests activate paths only with synthetic immutable policies, detector phrases, resources, clocks, and `example.invalid` sources.
 
 ## 31.7 Evidence and Remaining Work
 

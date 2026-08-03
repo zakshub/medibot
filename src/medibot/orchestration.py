@@ -3,9 +3,15 @@ from enum import StrEnum
 
 from medibot.emergency import EmergencyResourceRegistry
 from medibot.models import MessageRequest, MessageResponse, MessageRoute
-from medibot.policy import PolicyRepository
-from medibot.responses import emergency_response, unavailable_response
+from medibot.policy import PolicyRepository, PolicyVersion
+from medibot.responses import (
+    emergency_response,
+    prohibited_response,
+    unavailable_response,
+    unsupported_response,
+)
 from medibot.routing import EmergencySignalDetector, EmergencySignalStatus
+from medibot.scope import ScopeSignalDetector, ScopeSignalStatus
 
 MESSAGE_POLICY_ID = "message.safety"
 
@@ -23,6 +29,14 @@ class ProcessingOutcome(StrEnum):
     DETECTOR_DEPENDENCY_FAILURE = "blocked_detector_dependency_failure"
     REGISTRY_DEPENDENCY_FAILURE = "blocked_registry_dependency_failure"
     EMERGENCY_RESOURCE_RETURNED = "emergency_resource_returned"
+    SCOPE_DETECTOR_UNAVAILABLE = "blocked_scope_detector_unavailable"
+    SCOPE_DETECTOR_VERSION_NOT_PERMITTED = (
+        "blocked_scope_detector_version_not_permitted"
+    )
+    SCOPE_ROUTE_NOT_PERMITTED = "blocked_scope_route_not_permitted"
+    SCOPE_DEPENDENCY_FAILURE = "blocked_scope_dependency_failure"
+    UNSUPPORTED_RETURNED = "unsupported_returned"
+    PROHIBITED_RETURNED = "prohibited_returned"
 
 
 @dataclass(frozen=True, slots=True)
@@ -32,7 +46,12 @@ class MessageProcessingResult:
 
     @property
     def status_code(self) -> int:
-        return 200 if self.response.route == MessageRoute.EMERGENCY else 503
+        successful_routes = {
+            MessageRoute.EMERGENCY,
+            MessageRoute.UNSUPPORTED,
+            MessageRoute.PROHIBITED,
+        }
+        return 200 if self.response.route in successful_routes else 503
 
 
 class MessageOrchestrator:
@@ -43,11 +62,13 @@ class MessageOrchestrator:
         policy_repository: PolicyRepository,
         emergency_signal_detector: EmergencySignalDetector,
         emergency_registry: EmergencyResourceRegistry,
+        scope_signal_detector: ScopeSignalDetector,
         fallback_policy_version: str,
     ) -> None:
         self._policy_repository = policy_repository
         self._emergency_signal_detector = emergency_signal_detector
         self._emergency_registry = emergency_registry
+        self._scope_signal_detector = scope_signal_detector
         self._fallback_policy_version = fallback_policy_version
 
     def process(
@@ -110,11 +131,7 @@ class MessageOrchestrator:
                 ProcessingOutcome.DETECTOR_VERSION_NOT_PERMITTED,
             )
         if decision.status == EmergencySignalStatus.NO_SIGNAL:
-            return self._unavailable(
-                request_id,
-                policy.version,
-                ProcessingOutcome.NO_EMERGENCY_SIGNAL,
-            )
+            return self._process_scope(request_id, payload, policy)
 
         try:
             resource = self._emergency_registry.get_approved(
@@ -152,6 +169,70 @@ class MessageOrchestrator:
                 resource=resource,
             ),
             outcome=ProcessingOutcome.EMERGENCY_RESOURCE_RETURNED,
+        )
+
+    def _process_scope(
+        self,
+        request_id: str,
+        payload: MessageRequest,
+        policy: PolicyVersion,
+    ) -> MessageProcessingResult:
+        permitted_scope_routes = policy.permitted_routes & {
+            MessageRoute.UNSUPPORTED,
+            MessageRoute.PROHIBITED,
+        }
+        if not permitted_scope_routes:
+            return self._unavailable(
+                request_id,
+                policy.version,
+                ProcessingOutcome.NO_EMERGENCY_SIGNAL,
+            )
+
+        try:
+            decision = self._scope_signal_detector.evaluate(
+                payload.message,
+                payload.locale,
+            )
+        except Exception:
+            return self._unavailable(
+                request_id,
+                policy.version,
+                ProcessingOutcome.SCOPE_DEPENDENCY_FAILURE,
+            )
+
+        if decision.status == ScopeSignalStatus.UNAVAILABLE:
+            return self._unavailable(
+                request_id,
+                policy.version,
+                ProcessingOutcome.SCOPE_DETECTOR_UNAVAILABLE,
+            )
+        if decision.detector_version not in policy.permitted_scope_detector_versions:
+            return self._unavailable(
+                request_id,
+                policy.version,
+                ProcessingOutcome.SCOPE_DETECTOR_VERSION_NOT_PERMITTED,
+            )
+        if decision.status == ScopeSignalStatus.NO_SIGNAL:
+            return self._unavailable(
+                request_id,
+                policy.version,
+                ProcessingOutcome.NO_EMERGENCY_SIGNAL,
+            )
+        if decision.route not in permitted_scope_routes:
+            return self._unavailable(
+                request_id,
+                policy.version,
+                ProcessingOutcome.SCOPE_ROUTE_NOT_PERMITTED,
+            )
+
+        if decision.status == ScopeSignalStatus.UNSUPPORTED:
+            return MessageProcessingResult(
+                response=unsupported_response(request_id, policy.version),
+                outcome=ProcessingOutcome.UNSUPPORTED_RETURNED,
+            )
+        return MessageProcessingResult(
+            response=prohibited_response(request_id, policy.version),
+            outcome=ProcessingOutcome.PROHIBITED_RETURNED,
         )
 
     @staticmethod

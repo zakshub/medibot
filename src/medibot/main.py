@@ -21,6 +21,7 @@ from medibot.orchestration import MESSAGE_POLICY_ID, MessageOrchestrator
 from medibot.policy import EmptyPolicyRepository, PolicyRepository
 from medibot.rate_limit import FixedWindowRateLimitMiddleware
 from medibot.routing import EmergencySignalDetector, EmptyEmergencySignalDetector
+from medibot.scope import EmptyScopeSignalDetector, ScopeSignalDetector
 
 
 def create_app(
@@ -29,6 +30,7 @@ def create_app(
     policy_repository: PolicyRepository | None = None,
     emergency_registry: EmergencyResourceRegistry | None = None,
     emergency_signal_detector: EmergencySignalDetector | None = None,
+    scope_signal_detector: ScopeSignalDetector | None = None,
 ) -> FastAPI:
     settings = app_settings or get_settings()
     repository = (
@@ -45,6 +47,11 @@ def create_app(
         if emergency_signal_detector is not None
         else EmptyEmergencySignalDetector()
     )
+    scope_detector = (
+        scope_signal_detector
+        if scope_signal_detector is not None
+        else EmptyScopeSignalDetector()
+    )
     application = FastAPI(
         title=settings.app_name,
         version=settings.app_version,
@@ -56,10 +63,12 @@ def create_app(
     application.state.policy_repository = policies
     application.state.emergency_registry = emergency_resources
     application.state.emergency_signal_detector = emergency_detector
+    application.state.scope_signal_detector = scope_detector
     application.state.message_orchestrator = MessageOrchestrator(
         policy_repository=policies,
         emergency_signal_detector=emergency_detector,
         emergency_registry=emergency_resources,
+        scope_signal_detector=scope_detector,
         fallback_policy_version=settings.policy_version,
     )
     application.add_middleware(

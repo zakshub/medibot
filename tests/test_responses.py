@@ -2,7 +2,11 @@ from datetime import UTC, datetime, timedelta
 
 from medibot.emergency import EmergencyResource, EmergencyResourceStatus
 from medibot.models import MessageRoute
-from medibot.responses import emergency_response
+from medibot.responses import (
+    emergency_response,
+    prohibited_response,
+    unsupported_response,
+)
 from medibot.routing import EmergencySignalDecision, EmergencySignalStatus
 
 
@@ -81,3 +85,21 @@ def test_emergency_response_fails_closed_without_possible_emergency_signal() -> 
 
     assert response.route == MessageRoute.SERVICE_UNAVAILABLE
     assert response.sources == []
+
+
+def test_unsupported_response_is_bounded_and_non_medical() -> None:
+    response = unsupported_response("request-123", "policy-v1")
+
+    assert response.route == MessageRoute.UNSUPPORTED
+    assert response.policy_version == "policy-v1"
+    assert response.sources == []
+    assert "diagnosis" in response.limitations
+
+
+def test_prohibited_response_is_bounded_and_non_instructional() -> None:
+    response = prohibited_response("request-123", "policy-v1")
+
+    assert response.route == MessageRoute.PROHIBITED
+    assert response.policy_version == "policy-v1"
+    assert response.sources == []
+    assert "No instructions" in response.limitations

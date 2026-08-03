@@ -66,3 +66,9 @@
 62. Added assertive emergency announcements, busy states, reduced-motion scrolling, and browser persistence hints
 63. Added static UI regressions for unique IDs, control labels, landmarks, CSP compatibility, unsafe DOM sinks, and privacy storage APIs
 64. Fixed conversation-header overflow across the 761-to-1050-pixel tablet breakpoint and visually verified the rendered layout
+65. Added strict bounded scope decisions for no-signal, unsupported, prohibited, and unavailable outcomes
+66. Added a fail-closed scope detector and deterministic synthetic keyword reference detector with prohibited precedence
+67. Bound scope routes to explicit active-policy detector versions and route permissions
+68. Added emergency-first orchestration so scope handling cannot suppress a possible emergency response
+69. Added bounded unsupported and prohibited response composers with no medical guidance or sources
+70. Added API, audit, policy, dependency-failure, precedence, privacy, and response regression coverage for scope routing

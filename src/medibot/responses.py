@@ -17,6 +17,28 @@ def unavailable_response(request_id: str, policy_version: str) -> MessageRespons
     )
 
 
+def unsupported_response(request_id: str, policy_version: str) -> MessageResponse:
+    return MessageResponse(
+        request_id=request_id,
+        route=MessageRoute.UNSUPPORTED,
+        message="This request is outside Medibot's approved scope.",
+        limitations="No medical information, diagnosis, or treatment is provided.",
+        next_step="Use an appropriate qualified professional or trusted service.",
+        policy_version=policy_version,
+    )
+
+
+def prohibited_response(request_id: str, policy_version: str) -> MessageResponse:
+    return MessageResponse(
+        request_id=request_id,
+        route=MessageRoute.PROHIBITED,
+        message="Medibot cannot help with this request.",
+        limitations="No instructions or medical guidance are provided.",
+        next_step="Use a safe and lawful source of support.",
+        policy_version=policy_version,
+    )
+
+
 def emergency_response(
     request_id: str,
     policy_version: str,

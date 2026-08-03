@@ -30,6 +30,7 @@ The UI route is excluded from OpenAPI because the versioned API schema remains t
 11. Independent health and readiness status handling.
 12. Assertive accessible announcement for a returned emergency route.
 13. Busy-state, focus, reduced-motion, landmark, and control-label support.
+14. Distinct visual tags for emergency, unsupported, prohibited, information, and unavailable routes.
 
 ## 30.4 Security Boundary
 

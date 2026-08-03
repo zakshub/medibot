@@ -12,6 +12,7 @@ Safety and routing policy must be explicit evidence, not an environment string o
 - draft, approved, or retired status;
 - explicit permitted response routes;
 - explicit permitted detector versions when the emergency route is enabled;
+- explicit permitted scope-detector versions when unsupported or prohibited routes are enabled;
 - named approver;
 - timezone-aware approval, effective, and expiry timestamps;
 - effective time at or after approval;
@@ -20,6 +21,8 @@ Safety and routing policy must be explicit evidence, not an environment string o
 Only an approved policy inside its effective window is active. Draft, retired, incomplete, not-yet-effective, expired, or timezone-ambiguous policy is inactive.
 
 An emergency route without at least one pinned detector version is invalid. Detector versions cannot be attached to a policy that does not permit the emergency route. This prevents an arbitrary injected detector from becoming active under a route-only approval.
+
+Unsupported or prohibited routes similarly require at least one pinned scope-detector version. Scope-detector versions are invalid without one of those routes. A detector decision still cannot return a route omitted from the active policy.
 
 ## 3. Current Runtime
 

@@ -8,11 +8,11 @@ Medibot is an early-stage, safety-first medical-assistance bot with a typed API 
 
 - Documentation baseline: 95% complete
 - Repository, CI, and testing: 92% complete
-- Backend API foundation: 72% complete
+- Backend API foundation: 80% complete
 - Medical bot UI: 45% complete
-- Actual medical bot behavior: 15% complete; guarded emergency plumbing only
+- Actual medical bot behavior: 25% complete; guarded emergency and refusal routing only
 - Safety evaluation: 35% complete; engineering-only synthetic evidence
-- Overall estimated implementation: 47% complete
+- Overall estimated implementation: 50% complete
 
 See [DOC/10_Status_Tracker.md](DOC/10_Status_Tracker.md) for evidence, remaining work, and blockers. Percentages are planning estimates and do not represent clinical or release approval.
 
@@ -54,7 +54,7 @@ python -m venv .venv
 
 Open `http://127.0.0.1:8000/` for the medical bot UI. The OpenAPI contract remains available at `http://127.0.0.1:8000/docs`.
 
-The default message endpoint returns HTTP `503` by design. Normal health guidance remains disabled. An emergency response can return HTTP `200` only when explicitly injected active policy, route and exact detector-version permission, country/locale, detector decision, and approved matching resource all pass; the default runtime contains none of those activating dependencies.
+The default message endpoint returns HTTP `503` by design. Normal health guidance remains disabled. An emergency response can return HTTP `200` only when explicitly injected active policy, route and exact detector-version permission, country/locale, detector decision, and approved matching resource all pass. Unsupported or prohibited responses can return `200` only after emergency no-signal and separate policy-pinned scope detection. The default runtime contains no activating detectors, policy, or resources.
 
 The API rejects request bodies above 16 KB before schema validation and applies no-store and defensive browser security headers to every HTTP response.
 
@@ -138,6 +138,8 @@ The medical bot interface is documented in [DOC/30_UI_Scaffold.md](DOC/30_UI_Sca
 UI location, persistence, accessibility, status-isolation, DOM, and responsive controls are documented in [DOC/33_UI_Accessibility_And_Privacy.md](DOC/33_UI_Accessibility_And_Privacy.md). The country selector intentionally starts empty; the interface does not infer jurisdiction from language or developer location.
 
 The guarded live gate order, HTTP behavior, audit outcomes, and activation boundary are documented in [DOC/31_Message_Orchestration.md](DOC/31_Message_Orchestration.md).
+
+Emergency-first unsupported and prohibited handling is documented in [DOC/34_Scope_And_Refusal_Routing.md](DOC/34_Scope_And_Refusal_Routing.md). The current detector phrases are synthetic test plumbing and do not define real product scope.
 
 ## Safety Boundary
 

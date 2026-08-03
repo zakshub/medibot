@@ -26,6 +26,7 @@ from medibot.routing import (
     EmptyEmergencySignalDetector,
     KeywordEmergencySignalDetector,
 )
+from medibot.scope import EmptyScopeSignalDetector, KeywordScopeSignalDetector
 
 pytestmark = pytest.mark.anyio
 TEST_NOW = datetime(2026, 8, 5, tzinfo=UTC)
@@ -64,6 +65,24 @@ def synthetic_emergency_resource() -> EmergencyResource:
     )
 
 
+def synthetic_scope_policy() -> PolicyVersion:
+    approved_at = TEST_NOW - timedelta(days=2)
+    return PolicyVersion(
+        policy_id="message.safety",
+        version="synthetic-scope-policy-v1",
+        status=PolicyStatus.APPROVED,
+        permitted_routes=frozenset(
+            {MessageRoute.EMERGENCY, MessageRoute.UNSUPPORTED}
+        ),
+        permitted_detector_versions=frozenset({"synthetic-detector-v1"}),
+        permitted_scope_detector_versions=frozenset({"synthetic-scope-v1"}),
+        approved_by="Synthetic safety reviewer",
+        approved_at=approved_at,
+        effective_at=approved_at,
+        expires_at=TEST_NOW + timedelta(days=30),
+    )
+
+
 @pytest.fixture
 async def client() -> AsyncIterator[AsyncClient]:
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as value:
@@ -91,6 +110,7 @@ def test_app_factory_defaults_to_empty_content_repository() -> None:
         configured_app.state.emergency_signal_detector,
         EmptyEmergencySignalDetector,
     )
+    assert isinstance(configured_app.state.scope_signal_detector, EmptyScopeSignalDetector)
 
 
 def test_app_factory_preserves_injected_content_repository() -> None:
@@ -283,6 +303,63 @@ async def test_messages_return_emergency_only_with_complete_approved_chain(
         "policy_version": "synthetic-policy-v1",
         "request_id": payload["request_id"],
         "route": "emergency",
+    }
+
+
+async def test_messages_return_unsupported_only_after_emergency_no_signal(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    policies = InMemoryPolicyRepository(
+        [synthetic_scope_policy()],
+        clock=lambda: TEST_NOW,
+    )
+    emergency_detector = KeywordEmergencySignalDetector(
+        {"synthetic danger": frozenset({"immediate_help"})},
+        detector_version="synthetic-detector-v1",
+    )
+    scope_detector = KeywordScopeSignalDetector(
+        unsupported_keywords={
+            "synthetic outside scope": frozenset({"outside_scope"})
+        },
+        prohibited_keywords={},
+        detector_version="synthetic-scope-v1",
+    )
+    configured_app = create_app(
+        Settings(policy_version="metadata-only", _env_file=None),
+        policy_repository=policies,
+        emergency_signal_detector=emergency_detector,
+        scope_signal_detector=scope_detector,
+    )
+
+    with caplog.at_level(logging.INFO, logger="medibot.audit"):
+        async with AsyncClient(
+            transport=ASGITransport(app=configured_app),
+            base_url="http://test",
+        ) as configured_client:
+            response = await configured_client.post(
+                "/v1/messages",
+                json={
+                    "message": "This is a synthetic outside scope example.",
+                    "locale": "en-PK",
+                    "country_code": "PK",
+                },
+            )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["route"] == "unsupported"
+    assert payload["policy_version"] == "synthetic-scope-policy-v1"
+    assert payload["request_id"] == response.headers["x-request-id"]
+    assert payload["sources"] == []
+    assert "synthetic outside scope" not in response.text.lower()
+    assert "synthetic outside scope" not in caplog.text.lower()
+
+    event = json.loads(caplog.records[-1].message)
+    assert event == {
+        "outcome": "unsupported_returned",
+        "policy_version": "synthetic-scope-policy-v1",
+        "request_id": payload["request_id"],
+        "route": "unsupported",
     }
 
 

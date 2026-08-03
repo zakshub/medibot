@@ -89,6 +89,7 @@ Clients must not convert `route` into a diagnosis or hide emergency guidance.
 Current HTTP behavior:
 
 - `200` with route `emergency` only when an active policy permits the route and exact detector version, country and locale are present, the detector returns a valid possible-emergency decision, and the registry returns a matching approved resource;
+- `200` with route `unsupported` or `prohibited` only after the emergency detector returns no signal and an active policy permits the exact scope detector version and returned route;
 - `503` with route `service_unavailable` when any required gate is absent, unavailable, inconsistent, or fails;
 - normal medical-information responses remain disabled.
 

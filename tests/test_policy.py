@@ -17,7 +17,7 @@ def approved_policy(**overrides) -> PolicyVersion:
         "policy_id": "message.safety",
         "version": "1.0.0",
         "status": PolicyStatus.APPROVED,
-        "permitted_routes": frozenset({"unsupported", "service_unavailable"}),
+        "permitted_routes": frozenset({"service_unavailable"}),
         "approved_by": "Safety reviewer",
         "approved_at": approved_at,
         "effective_at": approved_at + timedelta(hours=1),
@@ -59,6 +59,29 @@ def test_emergency_policy_requires_pinned_detector_versions() -> None:
 def test_detector_versions_require_emergency_route() -> None:
     with pytest.raises(ValidationError, match="only valid with the emergency route"):
         approved_policy(permitted_detector_versions=frozenset({"synthetic-v1"}))
+
+
+def test_scope_policy_requires_pinned_scope_detector_versions() -> None:
+    with pytest.raises(ValidationError, match="require permitted scope detector"):
+        approved_policy(permitted_routes=frozenset({"unsupported"}))
+
+
+def test_scope_detector_versions_require_scope_route() -> None:
+    with pytest.raises(ValidationError, match="require a scope route"):
+        approved_policy(
+            permitted_scope_detector_versions=frozenset({"synthetic-scope-v1"})
+        )
+
+
+def test_scope_policy_accepts_explicit_detector_version() -> None:
+    policy = approved_policy(
+        permitted_routes=frozenset({"unsupported", "prohibited"}),
+        permitted_scope_detector_versions=frozenset({"synthetic-scope-v1"}),
+    )
+
+    assert policy.permitted_scope_detector_versions == frozenset(
+        {"synthetic-scope-v1"}
+    )
 
 
 def test_only_current_approved_policy_is_active() -> None:
