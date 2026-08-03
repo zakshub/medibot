@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
@@ -51,9 +53,11 @@ class RequestBodyLimitMiddleware:
 
     @staticmethod
     async def _reject(scope: Scope, receive: Receive, send: Send) -> None:
+        request_id = scope.get("state", {}).get("request_id", str(uuid4()))
         response = JSONResponse(
             status_code=413,
             content={
+                "request_id": request_id,
                 "error": {
                     "code": "REQUEST_TOO_LARGE",
                     "message": "The request body is too large.",
@@ -80,6 +84,9 @@ class SecurityHeadersMiddleware:
             await self.app(scope, receive, send)
             return
 
+        request_id = str(uuid4())
+        scope.setdefault("state", {})["request_id"] = request_id
+
         async def add_headers(message: Message) -> None:
             if message["type"] == "http.response.start":
                 headers = list(message.get("headers", []))
@@ -89,6 +96,8 @@ class SecurityHeadersMiddleware:
                     for name, value in self._HEADERS.items()
                     if name.encode("ascii") not in existing
                 )
+                if b"x-request-id" not in existing:
+                    headers.append((b"x-request-id", request_id.encode("ascii")))
                 message["headers"] = headers
             await send(message)
 

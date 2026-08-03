@@ -50,6 +50,8 @@ The message endpoint currently returns HTTP `503` by design. Health guidance rem
 
 The API rejects request bodies above 16 KB before schema validation and applies no-store and defensive browser security headers to every HTTP response.
 
+Every response includes an opaque `X-Request-ID`. Audit events contain only that identifier, route, outcome, and policy version; user health text is excluded by the audit event type and regression tests.
+
 ## Automated Checks
 
 Every push and pull request to `master` runs:

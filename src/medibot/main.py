@@ -1,9 +1,8 @@
-from uuid import uuid4
-
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+from medibot.audit import AuditEvent, emit_audit_event
 from medibot.config import get_settings
 from medibot.middleware import RequestBodyLimitMiddleware, SecurityHeadersMiddleware
 from medibot.models import HealthResponse, MessageRequest, MessageResponse, MessageRoute
@@ -21,14 +20,14 @@ app.add_middleware(SecurityHeadersMiddleware)
 
 @app.exception_handler(RequestValidationError)
 async def validation_error_handler(
-    _request: Request,
+    request: Request,
     _exc: RequestValidationError,
 ) -> JSONResponse:
     # FastAPI's default validation response can echo rejected health data.
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
         content={
-            "request_id": str(uuid4()),
+            "request_id": request.state.request_id,
             "error": {
                 "code": "INVALID_REQUEST",
                 "message": "The request could not be processed.",
@@ -47,10 +46,10 @@ def health() -> HealthResponse:
     response_model=MessageResponse,
     status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
 )
-def create_message(request: MessageRequest) -> JSONResponse:
+def create_message(request: Request, payload: MessageRequest) -> JSONResponse:
     # Product scope and safety controls are not approved, so the API must fail closed.
     response = MessageResponse(
-        request_id=str(uuid4()),
+        request_id=request.state.request_id,
         route=MessageRoute.SERVICE_UNAVAILABLE,
         message="Medibot is not available for health guidance yet.",
         limitations="No medical information, diagnosis, or treatment is provided.",
@@ -58,6 +57,14 @@ def create_message(request: MessageRequest) -> JSONResponse:
             "If this may be an emergency, contact local emergency services or a trusted person now."
         ),
         policy_version=settings.policy_version,
+    )
+    emit_audit_event(
+        AuditEvent(
+            request_id=response.request_id,
+            route=response.route,
+            outcome="blocked_unapproved",
+            policy_version=response.policy_version,
+        )
     )
     return JSONResponse(
         status_code=status.HTTP_503_SERVICE_UNAVAILABLE,

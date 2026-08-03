@@ -1,3 +1,6 @@
+import json
+import logging
+
 from fastapi.testclient import TestClient
 
 from medibot.main import app
@@ -10,6 +13,7 @@ def test_health_contract() -> None:
 
     assert response.status_code == 200
     assert response.json() == {"status": "ok", "version": "0.1.0"}
+    assert response.headers["x-request-id"]
 
 
 def test_responses_include_security_headers() -> None:
@@ -24,18 +28,29 @@ def test_responses_include_security_headers() -> None:
     assert response.headers["x-frame-options"] == "DENY"
 
 
-def test_messages_fail_closed_without_approved_safety_controls() -> None:
-    response = client.post(
-        "/v1/messages",
-        json={"message": "I have a headache", "locale": "en-PK", "country_code": "pk"},
-    )
+def test_messages_fail_closed_without_approved_safety_controls(caplog) -> None:
+    with caplog.at_level(logging.INFO, logger="medibot.audit"):
+        response = client.post(
+            "/v1/messages",
+            json={"message": "I have a headache", "locale": "en-PK", "country_code": "pk"},
+        )
 
     assert response.status_code == 503
     payload = response.json()
     assert payload["route"] == "service_unavailable"
     assert payload["sources"] == []
     assert payload["policy_version"] == "unapproved"
+    assert payload["request_id"] == response.headers["x-request-id"]
     assert "headache" not in response.text.lower()
+    assert "headache" not in caplog.text.lower()
+
+    event = json.loads(caplog.records[-1].message)
+    assert event == {
+        "outcome": "blocked_unapproved",
+        "policy_version": "unapproved",
+        "request_id": payload["request_id"],
+        "route": "service_unavailable",
+    }
 
 
 def test_messages_reject_unknown_fields() -> None:
@@ -46,6 +61,7 @@ def test_messages_reject_unknown_fields() -> None:
 
     assert response.status_code == 422
     assert "hello" not in response.text.lower()
+    assert response.json()["request_id"] == response.headers["x-request-id"]
 
 
 def test_messages_reject_oversized_input_without_echoing_it() -> None:
@@ -68,6 +84,7 @@ def test_request_body_limit_rejects_payload_before_validation() -> None:
 
     assert response.status_code == 413
     assert response.json() == {
+        "request_id": response.headers["x-request-id"],
         "error": {
             "code": "REQUEST_TOO_LARGE",
             "message": "The request body is too large.",
