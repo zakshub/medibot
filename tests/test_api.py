@@ -56,7 +56,13 @@ async def test_responses_include_security_headers(client: AsyncClient) -> None:
 
     assert response.headers["cache-control"] == "no-store"
     assert response.headers["content-security-policy"] == (
-        "default-src 'none'; frame-ancestors 'none'"
+        "default-src 'none'; "
+        "connect-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self'; "
+        "base-uri 'none'; "
+        "form-action 'self'; "
+        "frame-ancestors 'none'"
     )
     assert response.headers["referrer-policy"] == "no-referrer"
     assert response.headers["x-content-type-options"] == "nosniff"

@@ -35,6 +35,7 @@ Last updated: 2026-08-03
 27. [27_Emergency_Resource_Registry.md](./27_Emergency_Resource_Registry.md)
 28. [28_Emergency_Signal_Detection.md](./28_Emergency_Signal_Detection.md)
 29. [29_Emergency_Response_Composer.md](./29_Emergency_Response_Composer.md)
+30. [30_UI_Scaffold.md](./30_UI_Scaffold.md)
 
 ## Folder Purpose
 

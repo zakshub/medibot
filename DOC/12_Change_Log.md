@@ -44,3 +44,6 @@
 40. Added a fail-closed emergency resource registry contract with country, locale, approval, expiry, and duplicate-version controls
 41. Added an emergency signal detection contract with fail-closed default behavior and synthetic keyword reference tests
 42. Added an emergency response composer contract that requires both a possible emergency signal and an approved resource
+43. Added a responsive safety-first medical bot UI with live API status, bounded message rendering, and same-origin CSP controls
+44. Replaced the stale status tracker with evidence-based done and remaining estimates for each workstream
+45. Extended the repository line-ending policy to browser HTML, CSS, and JavaScript assets

@@ -1,0 +1,711 @@
+:root {
+  --ink: #17211e;
+  --muted: #66706b;
+  --paper: #f5f1e8;
+  --surface: #fffdf8;
+  --surface-strong: #ebe7dc;
+  --line: #d8d3c7;
+  --teal: #006b60;
+  --teal-soft: #d9ebe6;
+  --red: #a5352c;
+  --red-soft: #f5dfda;
+  --amber: #9b6500;
+  --amber-soft: #f4e8c5;
+  --shadow: 0 22px 60px rgb(42 53 48 / 12%);
+  --radius-large: 24px;
+  --radius-medium: 16px;
+  --radius-small: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: "Aptos", "Trebuchet MS", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at 4% 8%, rgb(0 107 96 / 12%), transparent 24rem),
+    radial-gradient(circle at 92% 88%, rgb(155 101 0 / 10%), transparent 30rem),
+    linear-gradient(135deg, #f8f4ea 0%, #eeeade 100%);
+}
+
+button,
+select,
+textarea {
+  color: inherit;
+  font: inherit;
+}
+
+button,
+select {
+  cursor: pointer;
+}
+
+button:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 3px solid rgb(0 107 96 / 28%);
+  outline-offset: 3px;
+}
+
+.app-shell {
+  display: grid;
+  width: min(1500px, calc(100% - 32px));
+  min-height: calc(100vh - 32px);
+  margin: 16px auto;
+  overflow: hidden;
+  background: rgb(255 253 248 / 92%);
+  border: 1px solid rgb(23 33 30 / 10%);
+  border-radius: 28px;
+  box-shadow: var(--shadow);
+  grid-template-rows: auto 1fr auto;
+  backdrop-filter: blur(18px);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand-mark {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  color: var(--surface);
+  background: var(--teal);
+  border-radius: 13px 13px 13px 4px;
+  font-family: "Bahnschrift", "Aptos Display", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  place-items: center;
+}
+
+.brand strong,
+.brand small {
+  display: block;
+  letter-spacing: 0.14em;
+}
+
+.brand strong {
+  font-family: "Bahnschrift", "Aptos Display", sans-serif;
+  font-size: 15px;
+}
+
+.brand small {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.service-pill {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  padding: 9px 13px;
+  color: var(--amber);
+  background: var(--amber-soft);
+  border: 1px solid rgb(155 101 0 / 15%);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: currentcolor;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgb(155 101 0 / 12%);
+}
+
+.service-pill.is-online {
+  color: var(--teal);
+  background: var(--teal-soft);
+  border-color: rgb(0 107 96 / 15%);
+}
+
+.service-pill.is-offline {
+  color: var(--red);
+  background: var(--red-soft);
+  border-color: rgb(165 53 44 / 15%);
+}
+
+.workspace {
+  display: grid;
+  min-height: 0;
+  grid-template-columns: minmax(0, 1fr) 360px;
+}
+
+.conversation-panel {
+  display: grid;
+  min-width: 0;
+  padding: 34px;
+  border-right: 1px solid var(--line);
+  grid-template-rows: auto auto minmax(260px, 1fr) auto;
+}
+
+.conversation-header {
+  display: flex;
+  gap: 24px;
+  align-items: end;
+  justify-content: space-between;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--teal);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2 {
+  font-family: "Bahnschrift", "Aptos Display", sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
+
+h1 {
+  max-width: 680px;
+  margin-bottom: 0;
+  font-size: clamp(28px, 4vw, 46px);
+  line-height: 1.02;
+}
+
+h2 {
+  margin-bottom: 18px;
+  font-size: 24px;
+}
+
+.context-controls {
+  display: flex;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.context-controls label {
+  display: grid;
+  gap: 6px;
+}
+
+.context-controls label span,
+.composer > label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+select {
+  max-width: 180px;
+  padding: 9px 32px 9px 11px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  font-size: 13px;
+}
+
+.emergency-banner {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  margin-top: 28px;
+  padding: 13px 16px;
+  color: #76271f;
+  background:
+    linear-gradient(90deg, rgb(165 53 44 / 8%), transparent),
+    var(--red-soft);
+  border: 1px solid rgb(165 53 44 / 18%);
+  border-left: 4px solid var(--red);
+  border-radius: var(--radius-small);
+  font-size: 13px;
+}
+
+.message-feed {
+  min-height: 0;
+  padding: 30px 4px 24px;
+  overflow-y: auto;
+  scrollbar-color: var(--line) transparent;
+}
+
+.message {
+  width: min(760px, 88%);
+  margin-bottom: 22px;
+  animation: message-enter 320ms ease-out both;
+}
+
+.message-user {
+  margin-left: auto;
+}
+
+.message-meta {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  margin: 0 6px 7px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.message-user .message-meta {
+  justify-content: flex-end;
+}
+
+.route-tag {
+  padding: 4px 7px;
+  color: var(--amber);
+  background: var(--amber-soft);
+  border-radius: 999px;
+  font-size: 9px;
+}
+
+.route-emergency {
+  color: var(--red);
+  background: var(--red-soft);
+}
+
+.route-information {
+  color: var(--teal);
+  background: var(--teal-soft);
+}
+
+.message-bubble {
+  padding: 20px 22px;
+  background: var(--surface-strong);
+  border: 1px solid var(--line);
+  border-radius: 4px var(--radius-medium) var(--radius-medium) var(--radius-medium);
+  line-height: 1.55;
+}
+
+.message-user .message-bubble {
+  color: #f8fffc;
+  background: var(--teal);
+  border-color: var(--teal);
+  border-radius: var(--radius-medium) 4px var(--radius-medium) var(--radius-medium);
+}
+
+.message-bubble p:last-child {
+  margin-bottom: 0;
+}
+
+.response-details {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid rgb(23 33 30 / 12%);
+}
+
+.response-details div {
+  display: grid;
+  gap: 3px;
+}
+
+.response-details dt {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.response-details dd {
+  margin: 0;
+  font-size: 13px;
+}
+
+.source-list {
+  margin: 15px 0 0;
+  padding: 14px 0 0 18px;
+  border-top: 1px solid rgb(23 33 30 / 12%);
+  font-size: 13px;
+}
+
+.source-list a {
+  color: var(--teal);
+  font-weight: 700;
+}
+
+.composer {
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.composer-row {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  margin-top: 8px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 82px;
+  padding: 15px 16px;
+  resize: vertical;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-medium);
+  line-height: 1.45;
+}
+
+textarea::placeholder {
+  color: #9b9f9b;
+}
+
+.composer-row button {
+  min-width: 140px;
+  padding: 0 20px;
+  color: white;
+  background: var(--ink);
+  border: 0;
+  border-radius: var(--radius-medium);
+  font-family: "Bahnschrift", "Aptos Display", sans-serif;
+  font-weight: 700;
+}
+
+.composer-row button:hover {
+  background: var(--teal);
+}
+
+.composer-row button:disabled {
+  cursor: wait;
+  opacity: 0.56;
+}
+
+.composer-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.status-panel {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  padding: 24px;
+  background:
+    linear-gradient(180deg, rgb(0 107 96 / 5%), transparent 400px),
+    #f0ede4;
+}
+
+.status-card {
+  padding: 22px;
+  background: rgb(255 253 248 / 82%);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-medium);
+}
+
+.status-card-primary {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #f7f3e9;
+}
+
+.status-card-primary .eyebrow {
+  color: #72cabe;
+}
+
+.card-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+}
+
+.text-button {
+  padding: 0;
+  color: #b9dcd6;
+  background: transparent;
+  border: 0;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.status-list {
+  display: grid;
+  gap: 13px;
+}
+
+.status-row {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding-bottom: 13px;
+  border-bottom: 1px solid rgb(255 255 255 / 11%);
+  font-size: 13px;
+}
+
+.status-row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.status-row span {
+  color: #b5c0bc;
+}
+
+.status-row strong {
+  max-width: 170px;
+  overflow: hidden;
+  color: #fff;
+  font-size: 12px;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-good {
+  color: #75d7ca !important;
+}
+
+.status-blocked {
+  color: #f3c573 !important;
+}
+
+.status-bad {
+  color: #f09c92 !important;
+}
+
+.reason-list {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgb(255 255 255 / 11%);
+  color: #d5dcd9;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.reason-list span {
+  display: block;
+}
+
+.boundary-grid {
+  display: grid;
+  gap: 11px;
+}
+
+.boundary-grid > div {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 2px 8px;
+  align-items: baseline;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+.boundary-number {
+  color: var(--red);
+  font-family: "Bahnschrift", "Aptos Display", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  grid-row: 1 / 3;
+}
+
+.boundary-grid strong {
+  font-size: 13px;
+}
+
+.boundary-grid small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.request-details {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.request-details div {
+  display: grid;
+  gap: 4px;
+}
+
+.request-details dt {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.request-details dd {
+  max-width: 100%;
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-family: Consolas, monospace;
+  font-size: 11px;
+}
+
+.app-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 28px;
+  color: var(--muted);
+  background: #ebe7dc;
+  border-top: 1px solid var(--line);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+@keyframes message-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1050px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .conversation-panel {
+    border-right: 0;
+  }
+
+  .status-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1px solid var(--line);
+  }
+
+  .request-card {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .topbar,
+  .conversation-panel,
+  .status-panel {
+    padding: 20px;
+  }
+
+  .conversation-header {
+    display: grid;
+  }
+
+  .context-controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  select {
+    width: 100%;
+    max-width: none;
+  }
+
+  .emergency-banner {
+    display: grid;
+  }
+
+  .message {
+    width: 96%;
+  }
+
+  .composer-row {
+    display: grid;
+  }
+
+  .composer-row button {
+    min-height: 52px;
+  }
+
+  .status-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .request-card {
+    grid-column: auto;
+  }
+
+  .app-footer {
+    display: grid;
+    gap: 6px;
+    padding: 14px 20px;
+  }
+}
+
+@media (max-width: 460px) {
+  .service-pill {
+    padding: 9px;
+  }
+
+  #service-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+  }
+
+  .context-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .composer-footer {
+    display: grid;
+    gap: 5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

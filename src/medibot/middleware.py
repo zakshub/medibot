@@ -70,7 +70,15 @@ class RequestBodyLimitMiddleware:
 class SecurityHeadersMiddleware:
     _HEADERS = {
         "cache-control": "no-store",
-        "content-security-policy": "default-src 'none'; frame-ancestors 'none'",
+        "content-security-policy": (
+            "default-src 'none'; "
+            "connect-src 'self'; "
+            "script-src 'self'; "
+            "style-src 'self'; "
+            "base-uri 'none'; "
+            "form-action 'self'; "
+            "frame-ancestors 'none'"
+        ),
         "referrer-policy": "no-referrer",
         "x-content-type-options": "nosniff",
         "x-frame-options": "DENY",

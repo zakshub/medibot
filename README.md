@@ -1,18 +1,19 @@
 # Medibot
 
-Medibot is an early-stage project repository for a medical-assistance bot. The repository currently contains the documentation and delivery controls needed before implementation begins.
+Medibot is an early-stage, safety-first medical-assistance bot with a typed API foundation, browser interface, and delivery controls. Medical guidance remains disabled until required product and clinical controls are approved.
 
 > This project is not a medical device and must not be used for diagnosis, emergency decisions, or treatment recommendations until its intended use, clinical safety controls, and regulatory requirements are formally defined and validated.
 
 ## Current Status
 
-- Documentation baseline: complete
-- Application source code: not present yet
-- Product requirements: pending
-- Clinical safety review: pending
-- Automated tests and deployment: pending
-- Continuous integration: lint, tests, and package build enabled
-- Executable API foundation: available, intentionally fails closed for health guidance
+- Documentation baseline: 95% complete
+- Repository, CI, and testing: 90% complete
+- Backend API foundation: 65% complete
+- Medical bot UI: 35% complete
+- Actual medical bot behavior: 10% complete and intentionally locked
+- Overall estimated implementation: 38% complete
+
+See [DOC/10_Status_Tracker.md](DOC/10_Status_Tracker.md) for evidence, remaining work, and blockers. Percentages are planning estimates and do not represent clinical or release approval.
 
 ## Start Here
 
@@ -27,6 +28,9 @@ Medibot is an early-stage project repository for a medical-assistance bot. The r
 
 ```text
 medibot/
+|-- src/medibot/     FastAPI application and browser UI
+|-- tests/           API, safety, repository, and UI regression tests
+|-- scripts/         Cross-platform verification commands
 |-- DOC/             Numbered project documentation
 |-- CONTRIBUTING.md  Contribution and review rules
 |-- README.md        Repository entry point
@@ -45,6 +49,8 @@ python -m venv .venv
 .venv\Scripts\python -m pytest
 .venv\Scripts\python -m uvicorn medibot.main:app --reload
 ```
+
+Open `http://127.0.0.1:8000/` for the medical bot UI. The OpenAPI contract remains available at `http://127.0.0.1:8000/docs`.
 
 The message endpoint currently returns HTTP `503` by design. Health guidance remains disabled until product scope and required safety controls are approved and implemented.
 
@@ -115,6 +121,8 @@ Emergency resources must satisfy [DOC/27_Emergency_Resource_Registry.md](DOC/27_
 Emergency signal detection must satisfy [DOC/28_Emergency_Signal_Detection.md](DOC/28_Emergency_Signal_Detection.md). The default detector is unavailable and fail-closed; the keyword detector exists only as deterministic test plumbing, not production triage.
 
 Emergency responses must satisfy [DOC/29_Emergency_Response_Composer.md](DOC/29_Emergency_Response_Composer.md). A response can use only bounded detector decisions and approved emergency resources; the live message endpoint remains unavailable for health guidance.
+
+The medical bot interface is documented in [DOC/30_UI_Scaffold.md](DOC/30_UI_Scaffold.md). It exposes live service state and the bounded message contract without bypassing the current safety lock.
 
 ## Safety Boundary
 

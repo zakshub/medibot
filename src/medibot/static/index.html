@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Medibot safety-first medical support interface."
+    >
+    <title>Medibot | Safety Console</title>
+    <link rel="stylesheet" href="/assets/medibot.css">
+    <script src="/assets/medibot.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="Medibot home">
+          <span class="brand-mark" aria-hidden="true">M</span>
+          <span>
+            <strong>MEDIBOT</strong>
+            <small>SAFETY CONSOLE</small>
+          </span>
+        </a>
+        <div class="service-pill is-checking" id="service-pill" aria-live="polite">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span id="service-label">Checking service</span>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="conversation-panel" aria-labelledby="conversation-title">
+          <header class="conversation-header">
+            <div>
+              <p class="eyebrow">Patient conversation</p>
+              <h1 id="conversation-title">Clear guidance. Hard safety limits.</h1>
+            </div>
+            <div class="context-controls">
+              <label>
+                <span>Language</span>
+                <select id="locale" name="locale">
+                  <option value="en-PK">English (Pakistan)</option>
+                  <option value="ur-PK">Urdu (Pakistan)</option>
+                  <option value="en-US">English (United States)</option>
+                  <option value="en-GB">English (United Kingdom)</option>
+                </select>
+              </label>
+              <label>
+                <span>Country</span>
+                <select id="country-code" name="country_code">
+                  <option value="PK">Pakistan</option>
+                  <option value="US">United States</option>
+                  <option value="GB">United Kingdom</option>
+                  <option value="">Not specified</option>
+                </select>
+              </label>
+            </div>
+          </header>
+
+          <div class="emergency-banner" role="note">
+            <strong>Possible emergency?</strong>
+            <span>Contact local emergency services or a trusted person now. Medibot cannot assess emergencies.</span>
+          </div>
+
+          <div class="message-feed" id="message-feed" aria-live="polite" aria-label="Conversation">
+            <article class="message message-assistant">
+              <div class="message-meta">
+                <span>Medibot</span>
+                <span class="route-tag route-locked">Guidance locked</span>
+              </div>
+              <div class="message-bubble">
+                <p>Medical guidance is currently unavailable while required clinical controls remain unapproved.</p>
+                <dl class="response-details">
+                  <div>
+                    <dt>Current limit</dt>
+                    <dd>No diagnosis, treatment recommendation, or severity assessment is provided.</dd>
+                  </div>
+                  <div>
+                    <dt>Safe next step</dt>
+                    <dd>You can test the interface. The API will return its approved fail-closed response.</dd>
+                  </div>
+                </dl>
+              </div>
+            </article>
+          </div>
+
+          <form class="composer" id="message-form">
+            <label for="message-input">Your health question</label>
+            <div class="composer-row">
+              <textarea
+                id="message-input"
+                name="message"
+                rows="3"
+                maxlength="4000"
+                placeholder="Describe what you need help with..."
+                required
+              ></textarea>
+              <button type="submit" id="send-button">
+                <span id="send-label">Send message</span>
+              </button>
+            </div>
+            <div class="composer-footer">
+              <span>Do not enter names, contact details, or medical record numbers.</span>
+              <span id="character-count">0 / 4000</span>
+            </div>
+          </form>
+        </section>
+
+        <aside class="status-panel" aria-label="System and safety status">
+          <section class="status-card status-card-primary">
+            <div class="card-heading">
+              <p class="eyebrow">Live system</p>
+              <button class="text-button" type="button" id="refresh-status">Refresh</button>
+            </div>
+            <div class="status-list">
+              <div class="status-row">
+                <span>API process</span>
+                <strong id="health-status">Checking</strong>
+              </div>
+              <div class="status-row">
+                <span>Medical guidance</span>
+                <strong id="ready-status">Checking</strong>
+              </div>
+              <div class="status-row">
+                <span>Policy</span>
+                <strong id="policy-status">Checking</strong>
+              </div>
+              <div class="status-row">
+                <span>Version</span>
+                <strong id="version-status">Checking</strong>
+              </div>
+            </div>
+            <div class="reason-list" id="readiness-reasons" hidden></div>
+          </section>
+
+          <section class="status-card">
+            <p class="eyebrow">Safety boundary</p>
+            <h2>What stays blocked</h2>
+            <div class="boundary-grid">
+              <div>
+                <span class="boundary-number">01</span>
+                <strong>Diagnosis</strong>
+                <small>No condition is confirmed.</small>
+              </div>
+              <div>
+                <span class="boundary-number">02</span>
+                <strong>Treatment choice</strong>
+                <small>No medicine or dose is selected.</small>
+              </div>
+              <div>
+                <span class="boundary-number">03</span>
+                <strong>Emergency verdict</strong>
+                <small>No severity decision is made.</small>
+              </div>
+            </div>
+          </section>
+
+          <section class="status-card request-card" id="request-card" hidden>
+            <p class="eyebrow">Latest request</p>
+            <dl class="request-details">
+              <div>
+                <dt>Route</dt>
+                <dd id="last-route">None</dd>
+              </div>
+              <div>
+                <dt>Request ID</dt>
+                <dd id="last-request-id">None</dd>
+              </div>
+            </dl>
+          </section>
+        </aside>
+      </main>
+
+      <footer class="app-footer">
+        <span>MEDIBOT / DEVELOPMENT BUILD</span>
+        <span>No health data is stored by this interface.</span>
+      </footer>
+    </div>
+  </body>
+</html>

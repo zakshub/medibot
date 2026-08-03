@@ -1,6 +1,9 @@
+from pathlib import Path
+
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from medibot.audit import AuditEvent, emit_audit_event
 from medibot.config import Settings, get_settings
@@ -64,6 +67,17 @@ def create_app(
         paths=frozenset({"/v1/messages"}),
     )
     application.add_middleware(SecurityHeadersMiddleware)
+
+    static_directory = Path(__file__).resolve().parent / "static"
+    application.mount(
+        "/assets",
+        StaticFiles(directory=static_directory),
+        name="assets",
+    )
+
+    @application.get("/", include_in_schema=False, response_class=FileResponse)
+    def user_interface() -> FileResponse:
+        return FileResponse(static_directory / "index.html", media_type="text/html")
 
     @application.exception_handler(RequestValidationError)
     async def validation_error_handler(
