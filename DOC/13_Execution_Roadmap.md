@@ -43,13 +43,14 @@ Exit criteria: identified risks have owners, controls, and verification methods.
 
 ## Batch 4 - Architecture and Technology Selection
 
-Status: Blocked by Batches 2 and 3
+Status: Draft architecture documented; technology selection blocked by Batches 2 and 3
 
 - Select client, server, model, storage, and hosting technologies.
 - Document trust boundaries and external processors.
 - Define API contracts and data models.
 - Create a testing and observability strategy.
 - Record architecture decisions and rejected alternatives.
+- Review and approve `17_System_Architecture.md`, `18_API_And_Data_Contracts.md`, and `19_Testing_And_Evaluation_Strategy.md`.
 
 Exit criteria: the architecture supports approved requirements without bypassing safety controls.
 

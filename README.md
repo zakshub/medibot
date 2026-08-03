@@ -19,6 +19,7 @@ Medibot is an early-stage project repository for a medical-assistance bot. The r
 3. Define the minimum viable product and explicit exclusions.
 4. Select the implementation stack only after requirements are approved.
 5. Track implementation using [DOC/13_Execution_Roadmap.md](DOC/13_Execution_Roadmap.md).
+6. Review the draft architecture and contracts before adding application code.
 
 ## Repository Layout
 
@@ -48,4 +49,3 @@ Until a reviewed product specification exists, Medibot must:
 - Record material changes in `DOC/12_Change_Log.md`.
 - Do not mark implementation work complete without evidence or tests.
 - Do not commit credentials, patient data, private medical records, or production secrets.
-

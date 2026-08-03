@@ -22,6 +22,9 @@ Last updated: 2026-08-03
 14. [14_Product_Requirements.md](./14_Product_Requirements.md)
 15. [15_Safety_Risk_Register.md](./15_Safety_Risk_Register.md)
 16. [16_Data_Governance_And_Privacy.md](./16_Data_Governance_And_Privacy.md)
+17. [17_System_Architecture.md](./17_System_Architecture.md)
+18. [18_API_And_Data_Contracts.md](./18_API_And_Data_Contracts.md)
+19. [19_Testing_And_Evaluation_Strategy.md](./19_Testing_And_Evaluation_Strategy.md)
 
 ## Folder Purpose
 
