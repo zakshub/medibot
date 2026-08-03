@@ -30,13 +30,14 @@ Exit criteria: an engineer and reviewer can independently describe the same prod
 
 ## Batch 3 - Safety, Privacy, and Compliance
 
-Status: Blocked by product definition
+Status: Draft controls documented; approval blocked by product definition
 
 - Create a medical-harm risk assessment.
 - Define privacy, consent, retention, deletion, and access rules.
 - Define human review and clinical content ownership.
 - Select jurisdictions and identify applicable legal requirements.
 - Define logging rules that exclude or protect sensitive information.
+- Resolve and approve `15_Safety_Risk_Register.md` and `16_Data_Governance_And_Privacy.md`.
 
 Exit criteria: identified risks have owners, controls, and verification methods.
 

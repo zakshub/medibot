@@ -20,6 +20,8 @@ Last updated: 2026-08-03
 12. [12_Change_Log.md](./12_Change_Log.md)
 13. [13_Execution_Roadmap.md](./13_Execution_Roadmap.md)
 14. [14_Product_Requirements.md](./14_Product_Requirements.md)
+15. [15_Safety_Risk_Register.md](./15_Safety_Risk_Register.md)
+16. [16_Data_Governance_And_Privacy.md](./16_Data_Governance_And_Privacy.md)
 
 ## Folder Purpose
 

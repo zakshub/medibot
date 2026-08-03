@@ -9,3 +9,5 @@
 5. Established a recommended folder structure for future project growth
 6. Added the repository README, contribution rules, ignore policy, and execution roadmap
 7. Added draft product requirements, safety boundaries, emergency behavior, and acceptance criteria
+8. Added the medical-safety risk register and release evidence rules
+9. Added data-governance, privacy, logging, retention, and processor controls
