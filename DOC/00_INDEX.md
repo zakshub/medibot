@@ -19,6 +19,7 @@ Last updated: 2026-08-03
 11. [11_Handoff_Notes_Template.md](./11_Handoff_Notes_Template.md)
 12. [12_Change_Log.md](./12_Change_Log.md)
 13. [13_Execution_Roadmap.md](./13_Execution_Roadmap.md)
+14. [14_Product_Requirements.md](./14_Product_Requirements.md)
 
 ## Folder Purpose
 

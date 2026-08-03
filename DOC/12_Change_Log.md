@@ -8,3 +8,4 @@
 4. Added planning, status, risk, and handoff templates
 5. Established a recommended folder structure for future project growth
 6. Added the repository README, contribution rules, ignore policy, and execution roadmap
+7. Added draft product requirements, safety boundaries, emergency behavior, and acceptance criteria

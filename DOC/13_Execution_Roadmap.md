@@ -17,13 +17,14 @@ Exit criteria: repository can be understood without verbal context.
 
 ## Batch 2 - Product Definition
 
-Status: Next
+Status: In progress
 
 - Identify target users and supported languages.
 - Define allowed use cases and prohibited use cases.
 - Define emergency escalation behavior.
 - Document functional and non-functional requirements.
 - Establish measurable acceptance criteria.
+- Resolve and approve the decisions recorded in `14_Product_Requirements.md`.
 
 Exit criteria: an engineer and reviewer can independently describe the same product behavior.
 
@@ -85,4 +86,3 @@ Implementation beyond the repository foundation requires factual product decisio
 - supported channels and languages;
 - data sources and model providers;
 - whether personal health data will be stored.
-
