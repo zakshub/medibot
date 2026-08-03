@@ -3,7 +3,12 @@ from datetime import UTC, datetime, timedelta
 import pytest
 from pydantic import ValidationError
 
-from medibot.content import ContentStatus, EmptyContentRepository, ReviewedContent
+from medibot.content import (
+    ContentStatus,
+    EmptyContentRepository,
+    InMemoryContentRepository,
+    ReviewedContent,
+)
 from medibot.responses import unavailable_response
 
 
@@ -69,6 +74,50 @@ def test_empty_repository_fails_closed() -> None:
     assert repository.get_approved("general.notice", "en-PK") is None
 
 
+def test_in_memory_repository_rejects_duplicate_versions() -> None:
+    record = approved_content()
+
+    with pytest.raises(ValueError, match="duplicate content"):
+        InMemoryContentRepository([record, record])
+
+
+def test_in_memory_repository_returns_latest_current_approval() -> None:
+    first = approved_content(version="1.0.0")
+    second_approval = datetime(2026, 8, 5, tzinfo=UTC)
+    second = approved_content(
+        version="2.0.0",
+        approved_at=second_approval,
+        expires_at=second_approval + timedelta(days=30),
+    )
+    repository = InMemoryContentRepository(
+        [first, second],
+        clock=lambda: datetime(2026, 8, 6, tzinfo=UTC),
+    )
+
+    result = repository.get_approved("general.notice", "en-PK")
+
+    assert result is not None
+    assert result.version == "2.0.0"
+
+
+def test_in_memory_repository_isolates_locale_and_expiry() -> None:
+    expired = approved_content(
+        expires_at=datetime(2026, 8, 4, tzinfo=UTC),
+    )
+    other_locale = approved_content(
+        locale="ur-PK",
+        expires_at=datetime(2026, 9, 4, tzinfo=UTC),
+    )
+    repository = InMemoryContentRepository(
+        [expired, other_locale],
+        clock=lambda: datetime(2026, 8, 5, tzinfo=UTC),
+    )
+
+    assert repository.get_approved("general.notice", "en-PK") is None
+    assert repository.get_approved("general.notice", "ur-PK") == other_locale
+    assert repository.get_approved("missing.notice", "ur-PK") is None
+
+
 def test_unavailable_response_remains_deterministic_and_non_medical() -> None:
     response = unavailable_response("request-1", "unapproved")
 
@@ -76,4 +125,3 @@ def test_unavailable_response_remains_deterministic_and_non_medical() -> None:
     assert response.sources == []
     assert response.request_id == "request-1"
     assert "diagnosis" in response.limitations
-

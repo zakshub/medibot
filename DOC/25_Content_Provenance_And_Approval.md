@@ -23,6 +23,8 @@ Unknown fields, missing approval evidence, naive timestamps, expired records, dr
 
 `ReviewedContent` enforces the provenance and approval contract. `ContentRepository` defines the read boundary. `EmptyContentRepository` is the current implementation and always returns no content, preserving fail-closed behavior until an approved source exists.
 
+`InMemoryContentRepository` is a deterministic reference implementation for tests or explicitly approved static records. It rejects duplicate ID/locale/version tuples, isolates locales, filters drafts/retired/expired records, and selects the most recently approved current version. It is not the production publication system.
+
 ## 4. Publication Workflow
 
 1. Create a draft from an identified authoritative source.
@@ -37,4 +39,3 @@ Unknown fields, missing approval evidence, naive timestamps, expired records, dr
 ## 5. Release Gate
 
 Normal medical-information responses remain blocked until the production repository, publication permissions, source allow-list, expiry process, reviewer ownership, localization review, tests, monitoring, and rollback are approved.
-

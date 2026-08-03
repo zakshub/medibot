@@ -1,3 +1,4 @@
+from collections.abc import Callable, Iterable
 from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Protocol
@@ -66,3 +67,34 @@ class EmptyContentRepository:
     def get_approved(self, content_id: str, locale: str) -> None:
         return None
 
+
+class InMemoryContentRepository:
+    """Deterministic reference repository for tests and approved static content."""
+
+    def __init__(
+        self,
+        records: Iterable[ReviewedContent],
+        clock: Callable[[], datetime] | None = None,
+    ) -> None:
+        self._clock = clock or (lambda: datetime.now(UTC))
+        self._records: dict[tuple[str, str], list[ReviewedContent]] = {}
+        versions: set[tuple[str, str, str]] = set()
+
+        for record in records:
+            version_key = (record.content_id, record.locale, record.version)
+            if version_key in versions:
+                raise ValueError("duplicate content ID, locale, and version")
+            versions.add(version_key)
+            self._records.setdefault((record.content_id, record.locale), []).append(record)
+
+    def get_approved(self, content_id: str, locale: str) -> ReviewedContent | None:
+        now = self._clock()
+        candidates = [
+            record
+            for record in self._records.get((content_id, locale), [])
+            if record.is_servable(now)
+        ]
+        if not candidates:
+            return None
+        minimum = datetime.min.replace(tzinfo=UTC)
+        return max(candidates, key=lambda record: record.approved_at or minimum)

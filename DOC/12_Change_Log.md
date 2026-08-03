@@ -38,3 +38,4 @@
 34. Added regression coverage proving malformed content length cannot bypass streamed body limits
 35. Added the blocking product decision register and reviewed-content provenance contract
 36. Extracted deterministic unavailable responses and added a fail-closed empty content repository
+37. Added a deterministic reviewed-content reference repository with duplicate, locale, expiry, and latest-version controls
