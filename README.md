@@ -96,6 +96,8 @@ Operational startup, signal interpretation, privacy incidents, readiness bypass,
 
 GitHub pull requests and issues use structured templates. Public submissions must use synthetic data; exploitable security or sensitive-data issues must use private vulnerability reporting.
 
+Every release candidate must complete [DOC/23_Release_Evidence_Template.md](DOC/23_Release_Evidence_Template.md) against one immutable commit and image. The default release decision remains blocked while required evidence or approvals are missing.
+
 ## Safety Boundary
 
 Until a reviewed product specification exists, Medibot must:

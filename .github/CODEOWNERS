@@ -1,0 +1,10 @@
+# Repository owner remains the fallback reviewer until domain owners are assigned.
+* @zakshub
+
+# Safety, privacy, deployment, and policy changes require explicit owner review.
+/DOC/ @zakshub
+/src/medibot/ @zakshub
+/.github/ @zakshub
+/Dockerfile @zakshub
+/compose.yaml @zakshub
+

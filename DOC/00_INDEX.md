@@ -28,6 +28,7 @@ Last updated: 2026-08-03
 20. [20_Abuse_Control_And_Authentication.md](./20_Abuse_Control_And_Authentication.md)
 21. [21_Deployment_And_Container.md](./21_Deployment_And_Container.md)
 22. [22_Operational_Runbook.md](./22_Operational_Runbook.md)
+23. [23_Release_Evidence_Template.md](./23_Release_Evidence_Template.md)
 
 ## Folder Purpose
 
