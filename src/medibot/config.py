@@ -16,6 +16,8 @@ class Settings(BaseSettings):
         pattern=r"^[A-Za-z0-9._-]+$",
     )
     max_request_body_bytes: int = Field(default=16_384, ge=1_024, le=1_048_576)
+    rate_limit_requests: int = Field(default=60, ge=1, le=10_000)
+    rate_limit_window_seconds: int = Field(default=60, ge=1, le=3_600)
     debug: bool = False
 
     model_config = SettingsConfigDict(

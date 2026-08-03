@@ -21,3 +21,4 @@
 17. Added strict startup validation for environment, request limits, policy versions, and production debug mode
 18. Separated process liveness from policy-gated traffic readiness
 19. Added dependency consistency, vulnerability auditing, and weekly update automation
+20. Added a per-process message-rate backstop, sanitized 429 contract, and production abuse-control boundary

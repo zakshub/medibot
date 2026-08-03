@@ -56,6 +56,8 @@ Runtime configuration is validated at startup. Unknown environments, unsafe requ
 
 `GET /v1/health` is a process-liveness check. `GET /v1/ready` is a separate traffic-readiness check and returns HTTP `503` while the policy version remains `unapproved`.
 
+`POST /v1/messages` has a per-process fixed-window rate-limit backstop. Production still requires a trusted edge or shared-store limiter because in-process counters are not distributed across instances.
+
 ## Automated Checks
 
 Every push and pull request to `master` runs:

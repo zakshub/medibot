@@ -25,6 +25,7 @@ Last updated: 2026-08-03
 17. [17_System_Architecture.md](./17_System_Architecture.md)
 18. [18_API_And_Data_Contracts.md](./18_API_And_Data_Contracts.md)
 19. [19_Testing_And_Evaluation_Strategy.md](./19_Testing_And_Evaluation_Strategy.md)
+20. [20_Abuse_Control_And_Authentication.md](./20_Abuse_Control_And_Authentication.md)
 
 ## Folder Purpose
 

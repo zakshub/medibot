@@ -12,6 +12,7 @@ from medibot.models import (
     MessageRoute,
     ReadinessResponse,
 )
+from medibot.rate_limit import FixedWindowRateLimitMiddleware
 
 settings = get_settings()
 
@@ -22,6 +23,12 @@ app = FastAPI(
     debug=settings.debug,
 )
 app.add_middleware(RequestBodyLimitMiddleware, max_body_bytes=settings.max_request_body_bytes)
+app.add_middleware(
+    FixedWindowRateLimitMiddleware,
+    requests=settings.rate_limit_requests,
+    window_seconds=settings.rate_limit_window_seconds,
+    paths=frozenset({"/v1/messages"}),
+)
 app.add_middleware(SecurityHeadersMiddleware)
 
 
