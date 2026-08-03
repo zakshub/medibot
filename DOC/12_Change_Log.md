@@ -18,3 +18,4 @@
 14. Added GitHub Actions quality gates and a private security-reporting policy
 15. Added transport-level request-size enforcement, sanitized 413 errors, and defensive response headers
 16. Added response correlation IDs and bounded structured audit events without raw health content
+17. Added strict startup validation for environment, request limits, policy versions, and production debug mode

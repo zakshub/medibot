@@ -1,20 +1,34 @@
 from functools import lru_cache
+from typing import Literal
 
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    app_name: str = "Medibot"
-    app_version: str = "0.1.0"
-    environment: str = "local"
-    policy_version: str = "unapproved"
-    max_request_body_bytes: int = 16_384
+    app_name: str = Field(default="Medibot", min_length=1, max_length=100)
+    app_version: str = Field(default="0.1.0", pattern=r"^[0-9]+\.[0-9]+\.[0-9]+$")
+    environment: Literal["local", "test", "staging", "production"] = "local"
+    policy_version: str = Field(
+        default="unapproved",
+        min_length=1,
+        max_length=100,
+        pattern=r"^[A-Za-z0-9._-]+$",
+    )
+    max_request_body_bytes: int = Field(default=16_384, ge=1_024, le=1_048_576)
+    debug: bool = False
 
     model_config = SettingsConfigDict(
         env_prefix="MEDIBOT_",
         env_file=".env",
         extra="ignore",
     )
+
+    @model_validator(mode="after")
+    def reject_production_debug(self) -> "Settings":
+        if self.environment == "production" and self.debug:
+            raise ValueError("debug mode is prohibited in production")
+        return self
 
 
 @lru_cache

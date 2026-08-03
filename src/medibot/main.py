@@ -13,6 +13,7 @@ app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
     description="Safety-first Medibot API foundation.",
+    debug=settings.debug,
 )
 app.add_middleware(RequestBodyLimitMiddleware, max_body_bytes=settings.max_request_body_bytes)
 app.add_middleware(SecurityHeadersMiddleware)
