@@ -3,7 +3,12 @@ from datetime import UTC, datetime, timedelta
 import pytest
 from pydantic import ValidationError
 
-from medibot.policy import EmptyPolicyRepository, PolicyStatus, PolicyVersion
+from medibot.policy import (
+    EmptyPolicyRepository,
+    InMemoryPolicyRepository,
+    PolicyStatus,
+    PolicyVersion,
+)
 
 
 def approved_policy(**overrides) -> PolicyVersion:
@@ -46,6 +51,16 @@ def test_policy_window_order_is_enforced() -> None:
         approved_policy(effective_at=approved_at, expires_at=approved_at)
 
 
+def test_emergency_policy_requires_pinned_detector_versions() -> None:
+    with pytest.raises(ValidationError, match="requires permitted detector versions"):
+        approved_policy(permitted_routes=frozenset({"emergency"}))
+
+
+def test_detector_versions_require_emergency_route() -> None:
+    with pytest.raises(ValidationError, match="only valid with the emergency route"):
+        approved_policy(permitted_detector_versions=frozenset({"synthetic-v1"}))
+
+
 def test_only_current_approved_policy_is_active() -> None:
     policy = approved_policy()
 
@@ -62,3 +77,34 @@ def test_only_current_approved_policy_is_active() -> None:
 def test_empty_policy_repository_fails_closed() -> None:
     assert EmptyPolicyRepository().get_active("message.safety") is None
 
+
+def test_in_memory_policy_repository_returns_latest_active_policy() -> None:
+    first = approved_policy(
+        version="1.0.0",
+        effective_at=datetime(2026, 8, 3, 1, tzinfo=UTC),
+    )
+    second = approved_policy(
+        version="1.1.0",
+        effective_at=datetime(2026, 8, 4, tzinfo=UTC),
+    )
+    repository = InMemoryPolicyRepository(
+        [first, second],
+        clock=lambda: datetime(2026, 8, 5, tzinfo=UTC),
+    )
+
+    assert repository.get_active("message.safety") == second
+
+
+def test_in_memory_policy_repository_filters_inactive_policies() -> None:
+    repository = InMemoryPolicyRepository(
+        [approved_policy(expires_at=datetime(2026, 8, 4, tzinfo=UTC))],
+        clock=lambda: datetime(2026, 8, 5, tzinfo=UTC),
+    )
+
+    assert repository.get_active("message.safety") is None
+    assert repository.get_active("unknown.policy") is None
+
+
+def test_in_memory_policy_repository_rejects_duplicate_versions() -> None:
+    with pytest.raises(ValueError, match="duplicate"):
+        InMemoryPolicyRepository([approved_policy(), approved_policy()])

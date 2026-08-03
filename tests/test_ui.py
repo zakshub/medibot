@@ -30,22 +30,26 @@ async def test_root_serves_medibot_interface(client: AsyncClient) -> None:
 
 
 @pytest.mark.parametrize(
-    ("path", "media_type", "expected_text"),
+    ("path", "media_types", "expected_text"),
     [
-        ("/assets/medibot.css", "text/css", "--teal: #006b60"),
-        ("/assets/medibot.js", "application/javascript", 'fetch("/v1/messages"'),
+        ("/assets/medibot.css", {"text/css"}, "--teal: #006b60"),
+        (
+            "/assets/medibot.js",
+            {"application/javascript", "text/javascript"},
+            'fetch("/v1/messages"',
+        ),
     ],
 )
 async def test_ui_assets_are_served(
     client: AsyncClient,
     path: str,
-    media_type: str,
+    media_types: set[str],
     expected_text: str,
 ) -> None:
     response = await client.get(path)
 
     assert response.status_code == 200
-    assert response.headers["content-type"].startswith(media_type)
+    assert response.headers["content-type"].split(";", 1)[0] in media_types
     assert expected_text in response.text
     assert response.headers["cache-control"] == "no-store"
 

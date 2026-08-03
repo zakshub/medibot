@@ -47,3 +47,11 @@
 43. Added a responsive safety-first medical bot UI with live API status, bounded message rendering, and same-origin CSP controls
 44. Replaced the stale status tracker with evidence-based done and remaining estimates for each workstream
 45. Extended the repository line-ending policy to browser HTML, CSS, and JavaScript assets
+46. Added an active in-memory policy repository with deterministic effective-window selection
+47. Added bounded emergency decision validation for route consistency, category shape, and category count
+48. Connected live message orchestration through active policy, route permission, location, detector, and approved-resource gates
+49. Added sanitized dependency-failure handling and bounded emergency orchestration audit outcomes
+50. Documented `200` emergency and `503` fail-closed message response contracts in OpenAPI and numbered project docs
+51. Bound emergency route policies to explicit detector-version allowlists and blocked unreviewed versions
+52. Split policy, detector, and registry dependency failures into bounded operational audit outcomes
+53. Made the UI asset regression test portable across standard Windows JavaScript MIME mappings

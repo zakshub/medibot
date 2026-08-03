@@ -2,8 +2,8 @@
 
 ## 1. Status
 
-- Status: Draft contract
-- Transport and framework: TBD
+- Status: Implemented foundation; medical-information routes remain draft
+- Transport and framework: JSON over HTTP using FastAPI/ASGI
 - Authentication model: TBD
 - Persistence: Not approved
 
@@ -49,7 +49,7 @@ Public health checks must not reveal dependency names, environment details, or c
 
 Validation:
 
-- `message`: required, trimmed, non-empty, maximum length TBD;
+- `message`: required, trimmed, non-empty, maximum 4,000 characters;
 - `locale`: allow-listed BCP 47 value;
 - `country_code`: optional allow-listed ISO 3166-1 alpha-2 value;
 - `consent_version`: required only when the approved flow requires consent;
@@ -86,6 +86,12 @@ Allowed `route` values:
 
 Clients must not convert `route` into a diagnosis or hide emergency guidance.
 
+Current HTTP behavior:
+
+- `200` with route `emergency` only when an active policy permits the route and exact detector version, country and locale are present, the detector returns a valid possible-emergency decision, and the registry returns a matching approved resource;
+- `503` with route `service_unavailable` when any required gate is absent, unavailable, inconsistent, or fails;
+- normal medical-information responses remain disabled.
+
 ## 6. Error Contract
 
 ```json
@@ -102,14 +108,15 @@ Initial error codes:
 
 | Code | HTTP status | Meaning |
 |---|---:|---|
-| INVALID_REQUEST | 400 | Shape, type, or field validation failed |
+| REQUEST_TOO_LARGE | 413 | Request body exceeds the configured byte limit |
+| INVALID_REQUEST | 422 | Shape, type, or field validation failed |
 | UNSUPPORTED_LOCALE | 400 | Locale is not approved |
 | UNAUTHORIZED | 401 | Required authentication failed |
 | RATE_LIMITED | 429 | Request limit exceeded |
 | SAFETY_SERVICE_UNAVAILABLE | 503 | Required safety control unavailable |
 | SERVICE_UNAVAILABLE | 503 | Normal response cannot be produced safely |
 
-The generated OpenAPI contract explicitly documents `413`, `422`, `429`, and `503` behavior for `/v1/messages`. Automated schema tests block accidental removal of these responses or addition of raw input fields to the bounded error model.
+The generated OpenAPI contract explicitly documents `200`, `413`, `422`, `429`, and `503` behavior for `/v1/messages`. Automated schema tests block accidental removal of these responses or addition of raw input fields to the bounded error model.
 
 ## 7. Minimal Internal Safety Decision
 

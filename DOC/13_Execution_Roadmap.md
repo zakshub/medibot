@@ -56,7 +56,7 @@ Exit criteria: the architecture supports approved requirements without bypassing
 
 ## Batch 5 - Minimum Viable Implementation
 
-Status: Foundation scaffold in progress; medical behavior blocked by Batch 4 approval
+Status: Foundation and guarded emergency plumbing in progress; normal medical behavior blocked by Batch 4 approval
 
 - Create the agreed source structure.
 - Implement the smallest end-to-end user flow.

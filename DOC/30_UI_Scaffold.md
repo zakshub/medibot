@@ -35,8 +35,8 @@ Approved source links are restricted in the browser to HTTP and HTTPS protocols.
 
 ## 30.5 Current Limitations
 
-1. Medical guidance remains unavailable and returns HTTP `503` by design.
-2. Emergency detection and approved resources are not connected to the live message route yet.
+1. Normal medical guidance remains unavailable and returns HTTP `503` by design.
+2. Emergency responses require injected approved dependencies; the default runtime has none and remains locked.
 3. The language selector changes the request locale but the locked response is currently English only.
 4. There is no authentication, consent flow, conversation persistence, or user profile.
 5. Accessibility has structural labels, focus states, reduced-motion handling, and responsive behavior, but still needs automated and human audit evidence.

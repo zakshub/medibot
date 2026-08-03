@@ -1,5 +1,9 @@
+import pytest
+from pydantic import ValidationError
+
 from medibot.models import MessageRoute
 from medibot.routing import (
+    EmergencySignalDecision,
     EmergencySignalStatus,
     EmptyEmergencySignalDetector,
     KeywordEmergencySignalDetector,
@@ -70,3 +74,50 @@ def test_keyword_emergency_signal_detector_allows_no_signal() -> None:
     assert decision.status == EmergencySignalStatus.NO_SIGNAL
     assert decision.route == MessageRoute.INFORMATION
     assert decision.categories == frozenset()
+
+
+def test_emergency_signal_decision_rejects_inconsistent_route() -> None:
+    with pytest.raises(ValidationError, match="status and route are inconsistent"):
+        EmergencySignalDecision(
+            status=EmergencySignalStatus.POSSIBLE_EMERGENCY,
+            route=MessageRoute.INFORMATION,
+            categories=frozenset({"synthetic_category"}),
+            detector_version="synthetic-v1",
+        )
+
+
+def test_possible_emergency_decision_requires_bounded_category() -> None:
+    with pytest.raises(ValidationError, match="requires bounded categories"):
+        EmergencySignalDecision(
+            status=EmergencySignalStatus.POSSIBLE_EMERGENCY,
+            route=MessageRoute.EMERGENCY,
+            detector_version="synthetic-v1",
+        )
+
+
+def test_non_emergency_decision_rejects_categories() -> None:
+    with pytest.raises(ValidationError, match="only valid for possible emergency"):
+        EmergencySignalDecision(
+            status=EmergencySignalStatus.NO_SIGNAL,
+            route=MessageRoute.INFORMATION,
+            categories=frozenset({"synthetic_category"}),
+            detector_version="synthetic-v1",
+        )
+
+
+@pytest.mark.parametrize(
+    "categories",
+    [
+        frozenset({"contains spaces"}),
+        frozenset({"x" * 65}),
+        frozenset(f"category_{index}" for index in range(17)),
+    ],
+)
+def test_emergency_categories_are_bounded(categories: frozenset[str]) -> None:
+    with pytest.raises(ValidationError):
+        EmergencySignalDecision(
+            status=EmergencySignalStatus.POSSIBLE_EMERGENCY,
+            route=MessageRoute.EMERGENCY,
+            categories=categories,
+            detector_version="synthetic-v1",
+        )

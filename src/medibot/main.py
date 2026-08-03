@@ -17,9 +17,9 @@ from medibot.models import (
     MessageResponse,
     ReadinessResponse,
 )
+from medibot.orchestration import MESSAGE_POLICY_ID, MessageOrchestrator
 from medibot.policy import EmptyPolicyRepository, PolicyRepository
 from medibot.rate_limit import FixedWindowRateLimitMiddleware
-from medibot.responses import unavailable_response
 from medibot.routing import EmergencySignalDetector, EmptyEmergencySignalDetector
 
 
@@ -56,6 +56,12 @@ def create_app(
     application.state.policy_repository = policies
     application.state.emergency_registry = emergency_resources
     application.state.emergency_signal_detector = emergency_detector
+    application.state.message_orchestrator = MessageOrchestrator(
+        policy_repository=policies,
+        emergency_signal_detector=emergency_detector,
+        emergency_registry=emergency_resources,
+        fallback_policy_version=settings.policy_version,
+    )
     application.add_middleware(
         RequestBodyLimitMiddleware,
         max_body_bytes=settings.max_request_body_bytes,
@@ -106,14 +112,23 @@ def create_app(
         responses={status.HTTP_503_SERVICE_UNAVAILABLE: {"model": ReadinessResponse}},
     )
     def readiness() -> JSONResponse:
+        policy_reason = "policy_unapproved"
+        try:
+            active_policy = policies.get_active(MESSAGE_POLICY_ID)
+        except Exception:
+            active_policy = None
+            policy_reason = "policy_unavailable"
+
         reasons = ["medical_guidance_unavailable"]
-        if settings.policy_version == "unapproved":
-            reasons.insert(0, "policy_unapproved")
+        if active_policy is None:
+            reasons.insert(0, policy_reason)
 
         response = ReadinessResponse(
             status="not_ready",
             version=settings.app_version,
-            policy_version=settings.policy_version,
+            policy_version=(
+                active_policy.version if active_policy is not None else settings.policy_version
+            ),
             reasons=reasons,
         )
         return JSONResponse(
@@ -124,30 +139,29 @@ def create_app(
     @application.post(
         "/v1/messages",
         response_model=MessageResponse,
-        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
         responses={
             status.HTTP_413_CONTENT_TOO_LARGE: {"model": ErrorResponse},
             status.HTTP_422_UNPROCESSABLE_CONTENT: {"model": ErrorResponse},
             status.HTTP_429_TOO_MANY_REQUESTS: {"model": ErrorResponse},
+            status.HTTP_503_SERVICE_UNAVAILABLE: {"model": MessageResponse},
         },
     )
     def create_message(request: Request, payload: MessageRequest) -> JSONResponse:
-        # Product scope and safety controls are not approved, so the API must fail closed.
-        response = unavailable_response(
+        result = application.state.message_orchestrator.process(
             request_id=request.state.request_id,
-            policy_version=settings.policy_version,
+            payload=payload,
         )
         emit_audit_event(
             AuditEvent(
-                request_id=response.request_id,
-                route=response.route,
-                outcome="blocked_unavailable",
-                policy_version=response.policy_version,
+                request_id=result.response.request_id,
+                route=result.response.route,
+                outcome=result.outcome,
+                policy_version=result.response.policy_version,
             )
         )
         return JSONResponse(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            content=response.model_dump(),
+            status_code=result.status_code,
+            content=result.response.model_dump(),
         )
 
     return application

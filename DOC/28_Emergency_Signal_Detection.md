@@ -15,6 +15,8 @@ This contract does not approve diagnosis, triage, treatment, or a complete emerg
 
 Raw user text, matched phrases, hidden thresholds, and model reasoning must not be included in the decision object.
 
+The runtime model rejects inconsistent status/route pairs. A possible-emergency decision requires 1 to 16 machine categories; each category is limited to 64 lowercase letters, digits, dots, underscores, or hyphens. Non-emergency decisions cannot carry categories.
+
 ## Default Behavior
 
 The default detector is unavailable and routes to `service_unavailable`. This keeps the app fail-closed until an approved classifier and evaluation suite exist.

@@ -11,10 +11,15 @@ def test_openapi_contains_versioned_public_routes() -> None:
 def test_message_contract_documents_all_bounded_responses() -> None:
     operation = create_app().openapi()["paths"]["/v1/messages"]["post"]
 
-    assert set(operation["responses"]) == {"413", "422", "429", "503"}
+    assert set(operation["responses"]) == {"200", "413", "422", "429", "503"}
     for status_code in ("413", "422", "429"):
         schema_ref = operation["responses"][status_code]["content"]["application/json"]["schema"]
         assert schema_ref == {"$ref": "#/components/schemas/ErrorResponse"}
+
+    unavailable_schema = operation["responses"]["503"]["content"]["application/json"][
+        "schema"
+    ]
+    assert unavailable_schema == {"$ref": "#/components/schemas/MessageResponse"}
 
 
 def test_error_response_schema_cannot_contain_health_input() -> None:
@@ -33,4 +38,3 @@ def test_message_request_forbids_additional_properties() -> None:
 
     assert request_schema["additionalProperties"] is False
     assert set(request_schema["required"]) == {"message", "locale"}
-

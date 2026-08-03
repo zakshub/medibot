@@ -23,13 +23,15 @@ This does not approve triage, diagnosis, severity assessment, treatment advice, 
 
 ## Current Boundary
 
-The message endpoint still returns `503` for all health guidance. The composer is a contract and testable building block for a later approved workflow.
+The composer is connected to the live message orchestration path. It returns an emergency response only when every policy, route permission, detector-version permission, location, detector, and approved-resource gate passes. The default application has empty policy, detector, and resource implementations, so it still returns `503` and cannot activate emergency or general medical behavior through configuration alone.
+
+Normal health-information guidance remains unavailable. The guarded integration is implementation plumbing, not production approval.
 
 ## Required Evidence Before Endpoint Use
 
 1. approved emergency signal detector;
 2. approved emergency resource registry coverage;
 3. locale-reviewed emergency wording;
-4. unknown-country failure tests;
+4. synthetic unknown-country and dependency-failure tests;
 5. audit events proving raw health text is excluded;
 6. clinical, legal, and product approval.

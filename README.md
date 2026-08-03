@@ -8,10 +8,10 @@ Medibot is an early-stage, safety-first medical-assistance bot with a typed API 
 
 - Documentation baseline: 95% complete
 - Repository, CI, and testing: 90% complete
-- Backend API foundation: 65% complete
+- Backend API foundation: 72% complete
 - Medical bot UI: 35% complete
-- Actual medical bot behavior: 10% complete and intentionally locked
-- Overall estimated implementation: 38% complete
+- Actual medical bot behavior: 15% complete; guarded emergency plumbing only
+- Overall estimated implementation: 42% complete
 
 See [DOC/10_Status_Tracker.md](DOC/10_Status_Tracker.md) for evidence, remaining work, and blockers. Percentages are planning estimates and do not represent clinical or release approval.
 
@@ -52,7 +52,7 @@ python -m venv .venv
 
 Open `http://127.0.0.1:8000/` for the medical bot UI. The OpenAPI contract remains available at `http://127.0.0.1:8000/docs`.
 
-The message endpoint currently returns HTTP `503` by design. Health guidance remains disabled until product scope and required safety controls are approved and implemented.
+The default message endpoint returns HTTP `503` by design. Normal health guidance remains disabled. An emergency response can return HTTP `200` only when explicitly injected active policy, route and exact detector-version permission, country/locale, detector decision, and approved matching resource all pass; the default runtime contains none of those activating dependencies.
 
 The API rejects request bodies above 16 KB before schema validation and applies no-store and defensive browser security headers to every HTTP response.
 
@@ -120,9 +120,11 @@ Emergency resources must satisfy [DOC/27_Emergency_Resource_Registry.md](DOC/27_
 
 Emergency signal detection must satisfy [DOC/28_Emergency_Signal_Detection.md](DOC/28_Emergency_Signal_Detection.md). The default detector is unavailable and fail-closed; the keyword detector exists only as deterministic test plumbing, not production triage.
 
-Emergency responses must satisfy [DOC/29_Emergency_Response_Composer.md](DOC/29_Emergency_Response_Composer.md). A response can use only bounded detector decisions and approved emergency resources; the live message endpoint remains unavailable for health guidance.
+Emergency responses must satisfy [DOC/29_Emergency_Response_Composer.md](DOC/29_Emergency_Response_Composer.md). A response can use only bounded detector decisions and approved emergency resources; normal health guidance remains unavailable.
 
 The medical bot interface is documented in [DOC/30_UI_Scaffold.md](DOC/30_UI_Scaffold.md). It exposes live service state and the bounded message contract without bypassing the current safety lock.
+
+The guarded live gate order, HTTP behavior, audit outcomes, and activation boundary are documented in [DOC/31_Message_Orchestration.md](DOC/31_Message_Orchestration.md).
 
 ## Safety Boundary
 
