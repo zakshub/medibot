@@ -48,6 +48,8 @@ python -m venv .venv
 
 The message endpoint currently returns HTTP `503` by design. Health guidance remains disabled until product scope and required safety controls are approved and implemented.
 
+The API rejects request bodies above 16 KB before schema validation and applies no-store and defensive browser security headers to every HTTP response.
+
 ## Automated Checks
 
 Every push and pull request to `master` runs:

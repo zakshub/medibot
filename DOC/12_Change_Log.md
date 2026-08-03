@@ -16,3 +16,4 @@
 12. Added layered testing, safety evaluation, regression, and release evidence strategy
 13. Added a typed FastAPI scaffold, strict request contract, fail-closed message endpoint, and automated API tests
 14. Added GitHub Actions quality gates and a private security-reporting policy
+15. Added transport-level request-size enforcement, sanitized 413 errors, and defensive response headers

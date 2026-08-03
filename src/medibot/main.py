@@ -5,6 +5,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from medibot.config import get_settings
+from medibot.middleware import RequestBodyLimitMiddleware, SecurityHeadersMiddleware
 from medibot.models import HealthResponse, MessageRequest, MessageResponse, MessageRoute
 
 settings = get_settings()
@@ -14,6 +15,8 @@ app = FastAPI(
     version=settings.app_version,
     description="Safety-first Medibot API foundation.",
 )
+app.add_middleware(RequestBodyLimitMiddleware, max_body_bytes=settings.max_request_body_bytes)
+app.add_middleware(SecurityHeadersMiddleware)
 
 
 @app.exception_handler(RequestValidationError)

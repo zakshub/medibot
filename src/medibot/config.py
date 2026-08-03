@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     app_version: str = "0.1.0"
     environment: str = "local"
     policy_version: str = "unapproved"
+    max_request_body_bytes: int = 16_384
 
     model_config = SettingsConfigDict(
         env_prefix="MEDIBOT_",
@@ -19,4 +20,3 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
-
