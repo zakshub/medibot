@@ -11,6 +11,7 @@ Medibot is an early-stage project repository for a medical-assistance bot. The r
 - Product requirements: pending
 - Clinical safety review: pending
 - Automated tests and deployment: pending
+- Continuous integration: lint, tests, and package build enabled
 - Executable API foundation: available, intentionally fails closed for health guidance
 
 ## Start Here
@@ -46,6 +47,16 @@ python -m venv .venv
 ```
 
 The message endpoint currently returns HTTP `503` by design. Health guidance remains disabled until product scope and required safety controls are approved and implemented.
+
+## Automated Checks
+
+Every push and pull request to `master` runs:
+
+- Ruff lint checks;
+- the pytest API suite;
+- an editable install and package-wheel build.
+
+Security concerns should follow [SECURITY.md](SECURITY.md) and must not include real health data in public reports.
 
 ## Safety Boundary
 
