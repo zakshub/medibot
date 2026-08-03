@@ -1,8 +1,11 @@
+import pytest
 from fastapi import FastAPI
-from fastapi.testclient import TestClient
+from httpx import ASGITransport, AsyncClient
 
 from medibot.middleware import SecurityHeadersMiddleware
 from medibot.rate_limit import FixedWindowRateLimitMiddleware
+
+pytestmark = pytest.mark.anyio
 
 
 def build_limited_app() -> FastAPI:
@@ -22,14 +25,16 @@ def build_limited_app() -> FastAPI:
     return app
 
 
-def test_rate_limit_returns_sanitized_429_with_retry_after() -> None:
-    client = TestClient(build_limited_app())
-    assert client.post("/v1/messages").status_code == 200
-
-    response = client.post(
-        "/v1/messages",
-        headers={"X-Forwarded-For": "sensitive-user-identifier"},
-    )
+async def test_rate_limit_returns_sanitized_429_with_retry_after() -> None:
+    async with AsyncClient(
+        transport=ASGITransport(app=build_limited_app()),
+        base_url="http://test",
+    ) as client:
+        assert (await client.post("/v1/messages")).status_code == 200
+        response = await client.post(
+            "/v1/messages",
+            headers={"X-Forwarded-For": "sensitive-user-identifier"},
+        )
 
     assert response.status_code == 429
     assert int(response.headers["retry-after"]) >= 1
@@ -44,9 +49,11 @@ def test_rate_limit_returns_sanitized_429_with_retry_after() -> None:
     assert response.headers["cache-control"] == "no-store"
 
 
-def test_rate_limit_does_not_apply_to_unlisted_paths() -> None:
-    client = TestClient(build_limited_app())
-
-    for _attempt in range(3):
-        assert client.get("/openapi.json").status_code == 200
+async def test_rate_limit_does_not_apply_to_unlisted_paths() -> None:
+    async with AsyncClient(
+        transport=ASGITransport(app=build_limited_app()),
+        base_url="http://test",
+    ) as client:
+        for _attempt in range(3):
+            assert (await client.get("/openapi.json")).status_code == 200
 

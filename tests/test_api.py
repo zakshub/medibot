@@ -1,24 +1,32 @@
 import json
 import logging
+from collections.abc import AsyncIterator
 
-from fastapi.testclient import TestClient
+import pytest
+from httpx import ASGITransport, AsyncClient
 
 from medibot.config import Settings
 from medibot.main import app, create_app
 
-client = TestClient(app)
+pytestmark = pytest.mark.anyio
 
 
-def test_health_contract() -> None:
-    response = client.get("/v1/health")
+@pytest.fixture
+async def client() -> AsyncIterator[AsyncClient]:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as value:
+        yield value
+
+
+async def test_health_contract(client: AsyncClient) -> None:
+    response = await client.get("/v1/health")
 
     assert response.status_code == 200
     assert response.json() == {"status": "ok", "version": "0.1.0"}
     assert response.headers["x-request-id"]
 
 
-def test_responses_include_security_headers() -> None:
-    response = client.get("/v1/health")
+async def test_responses_include_security_headers(client: AsyncClient) -> None:
+    response = await client.get("/v1/health")
 
     assert response.headers["cache-control"] == "no-store"
     assert response.headers["content-security-policy"] == (
@@ -29,8 +37,8 @@ def test_responses_include_security_headers() -> None:
     assert response.headers["x-frame-options"] == "DENY"
 
 
-def test_readiness_fails_closed_for_unapproved_policy() -> None:
-    response = client.get("/v1/ready")
+async def test_readiness_fails_closed_for_unapproved_policy(client: AsyncClient) -> None:
+    response = await client.get("/v1/ready")
 
     assert response.status_code == 503
     assert response.json() == {
@@ -43,14 +51,16 @@ def test_readiness_fails_closed_for_unapproved_policy() -> None:
     assert response.headers["x-request-id"]
 
 
-def test_approved_policy_does_not_create_false_readiness() -> None:
+async def test_approved_policy_does_not_create_false_readiness() -> None:
     configured_app = create_app(
         Settings(policy_version="reviewed-v1", app_version="1.2.3", _env_file=None)
     )
-    configured_client = TestClient(configured_app)
-
-    health_response = configured_client.get("/v1/health")
-    readiness_response = configured_client.get("/v1/ready")
+    async with AsyncClient(
+        transport=ASGITransport(app=configured_app),
+        base_url="http://test",
+    ) as configured_client:
+        health_response = await configured_client.get("/v1/health")
+        readiness_response = await configured_client.get("/v1/ready")
 
     assert health_response.json()["version"] == "1.2.3"
     assert readiness_response.status_code == 503
@@ -62,9 +72,12 @@ def test_approved_policy_does_not_create_false_readiness() -> None:
     }
 
 
-def test_messages_fail_closed_without_approved_safety_controls(caplog) -> None:
+async def test_messages_fail_closed_without_approved_safety_controls(
+    client: AsyncClient,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     with caplog.at_level(logging.INFO, logger="medibot.audit"):
-        response = client.post(
+        response = await client.post(
             "/v1/messages",
             json={"message": "I have a headache", "locale": "en-PK", "country_code": "pk"},
         )
@@ -87,8 +100,8 @@ def test_messages_fail_closed_without_approved_safety_controls(caplog) -> None:
     }
 
 
-def test_messages_reject_unknown_fields() -> None:
-    response = client.post(
+async def test_messages_reject_unknown_fields(client: AsyncClient) -> None:
+    response = await client.post(
         "/v1/messages",
         json={"message": "hello", "locale": "en-PK", "unexpected": "not allowed"},
     )
@@ -98,9 +111,11 @@ def test_messages_reject_unknown_fields() -> None:
     assert response.json()["request_id"] == response.headers["x-request-id"]
 
 
-def test_messages_reject_oversized_input_without_echoing_it() -> None:
+async def test_messages_reject_oversized_input_without_echoing_it(
+    client: AsyncClient,
+) -> None:
     oversized = "private-health-data-" * 250
-    response = client.post(
+    response = await client.post(
         "/v1/messages",
         json={"message": oversized, "locale": "en-PK"},
     )
@@ -109,9 +124,11 @@ def test_messages_reject_oversized_input_without_echoing_it() -> None:
     assert oversized not in response.text
 
 
-def test_request_body_limit_rejects_payload_before_validation() -> None:
+async def test_request_body_limit_rejects_payload_before_validation(
+    client: AsyncClient,
+) -> None:
     private_payload = "private-health-data-" * 1_000
-    response = client.post(
+    response = await client.post(
         "/v1/messages",
         json={"message": private_payload, "locale": "en-PK"},
     )
@@ -122,7 +139,7 @@ def test_request_body_limit_rejects_payload_before_validation() -> None:
         "error": {
             "code": "REQUEST_TOO_LARGE",
             "message": "The request body is too large.",
-        }
+        },
     }
     assert private_payload not in response.text
     assert response.headers["cache-control"] == "no-store"
