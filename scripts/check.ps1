@@ -24,10 +24,11 @@ if (-not (Test-Path -LiteralPath $Python)) {
 Invoke-Check "Ruff" @("-m", "ruff", "check", "src", "tests")
 Invoke-Check "Tests and coverage" @("-m", "pytest")
 Invoke-Check "Dependency consistency" @("-m", "pip", "check")
-Invoke-Check "Dependency vulnerability audit" @("-m", "pip_audit")
+Invoke-Check "Dependency vulnerability audit" @(
+    "-m", "pip_audit", "--cache-dir", ".pip-audit-cache"
+)
 Invoke-Check "Package build" @(
     "-m", "pip", "wheel", "--no-deps", "--wheel-dir", "dist", "."
 )
 
 Write-Host "All verification checks passed."
-

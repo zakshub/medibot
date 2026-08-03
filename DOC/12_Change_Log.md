@@ -41,3 +41,4 @@
 37. Added a deterministic reviewed-content reference repository with duplicate, locale, expiry, and latest-version controls
 38. Added explicit application-factory content repository injection with a fail-closed default
 39. Added versioned policy approval/effective-window contracts and a fail-closed policy repository
+40. Added a fail-closed emergency resource registry contract with country, locale, approval, expiry, and duplicate-version controls

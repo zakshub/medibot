@@ -110,6 +110,8 @@ Product decisions are tracked in [DOC/24_Product_Decision_Register.md](DOC/24_Pr
 
 Safety policy must satisfy [DOC/26_Policy_Versioning_And_Approval.md](DOC/26_Policy_Versioning_And_Approval.md). The application defaults to an empty policy repository, and a policy-version environment string cannot activate medical behavior.
 
+Emergency resources must satisfy [DOC/27_Emergency_Resource_Registry.md](DOC/27_Emergency_Resource_Registry.md). The application defaults to an empty emergency registry; unknown country or locale combinations return no resource, and tests use synthetic emergency examples only.
+
 ## Safety Boundary
 
 Until a reviewed product specification exists, Medibot must:
