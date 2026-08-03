@@ -14,3 +14,4 @@
 10. Added logical architecture, trust boundaries, dependencies, and safe failure behavior
 11. Added draft API, error, audit, content, and policy data contracts
 12. Added layered testing, safety evaluation, regression, and release evidence strategy
+13. Added a typed FastAPI scaffold, strict request contract, fail-closed message endpoint, and automated API tests

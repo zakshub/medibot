@@ -11,6 +11,7 @@ Medibot is an early-stage project repository for a medical-assistance bot. The r
 - Product requirements: pending
 - Clinical safety review: pending
 - Automated tests and deployment: pending
+- Executable API foundation: available, intentionally fails closed for health guidance
 
 ## Start Here
 
@@ -32,6 +33,19 @@ medibot/
 ```
 
 The target application folders described in `DOC/03_Recommended_Folder_Structure.md` should be created when the technology stack and product scope are confirmed.
+
+## Local Development
+
+Requires Python 3.11 or newer.
+
+```powershell
+python -m venv .venv
+.venv\Scripts\python -m pip install -e ".[dev]"
+.venv\Scripts\python -m pytest
+.venv\Scripts\python -m uvicorn medibot.main:app --reload
+```
+
+The message endpoint currently returns HTTP `503` by design. Health guidance remains disabled until product scope and required safety controls are approved and implemented.
 
 ## Safety Boundary
 
