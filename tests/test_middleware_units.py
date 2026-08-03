@@ -72,6 +72,33 @@ async def test_chunked_body_overflow_is_rejected_without_content_length() -> Non
     assert "12345678" not in json.dumps(body)
 
 
+async def test_malformed_content_length_cannot_bypass_streamed_limit() -> None:
+    sent: list[Message] = []
+
+    async def receive() -> Message:
+        return {"type": "http.request", "body": b"12345678", "more_body": False}
+
+    async def consume_body(_scope: Scope, app_receive: Receive, _send: Send) -> None:
+        await app_receive()
+
+    async def send(message: Message) -> None:
+        sent.append(message)
+
+    middleware = RequestBodyLimitMiddleware(consume_body, max_body_bytes=6)
+    scope: Scope = {
+        "type": "http",
+        "method": "POST",
+        "path": "/v1/messages",
+        "headers": [(b"content-length", b"not-a-number")],
+        "state": {"request_id": "request-456"},
+    }
+
+    await middleware(scope, receive, send)
+
+    assert sent[0]["status"] == 413
+    assert json.loads(sent[1]["body"])["request_id"] == "request-456"
+
+
 async def test_non_http_scopes_pass_through_both_middlewares() -> None:
     calls: list[str] = []
 

@@ -35,3 +35,4 @@
 31. Disabled pytest's nonessential cache provider to avoid synced-drive cache races
 32. Added explicit cross-platform line-ending policy for source, configuration, docs, and scripts
 33. Added targeted ASGI tests for chunked overflow, middleware pass-through, header preservation, and limiter expiry
+34. Added regression coverage proving malformed content length cannot bypass streamed body limits
