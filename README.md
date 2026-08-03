@@ -62,9 +62,12 @@ Every push and pull request to `master` runs:
 
 - Ruff lint checks;
 - the pytest API suite;
+- dependency consistency and known-vulnerability checks;
 - an editable install and package-wheel build.
 
 Security concerns should follow [SECURITY.md](SECURITY.md) and must not include real health data in public reports.
+
+Dependabot checks Python and GitHub Actions dependencies weekly. Updates still require the full CI and safety review; automated version proposals are not automatic release approval.
 
 ## Safety Boundary
 

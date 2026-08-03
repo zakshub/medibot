@@ -20,3 +20,4 @@
 16. Added response correlation IDs and bounded structured audit events without raw health content
 17. Added strict startup validation for environment, request limits, policy versions, and production debug mode
 18. Separated process liveness from policy-gated traffic readiness
+19. Added dependency consistency, vulnerability auditing, and weekly update automation
