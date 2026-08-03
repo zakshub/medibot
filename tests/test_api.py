@@ -28,6 +28,20 @@ def test_responses_include_security_headers() -> None:
     assert response.headers["x-frame-options"] == "DENY"
 
 
+def test_readiness_fails_closed_for_unapproved_policy() -> None:
+    response = client.get("/v1/ready")
+
+    assert response.status_code == 503
+    assert response.json() == {
+        "status": "not_ready",
+        "version": "0.1.0",
+        "policy_version": "unapproved",
+        "reasons": ["policy_unapproved"],
+    }
+    assert response.headers["cache-control"] == "no-store"
+    assert response.headers["x-request-id"]
+
+
 def test_messages_fail_closed_without_approved_safety_controls(caplog) -> None:
     with caplog.at_level(logging.INFO, logger="medibot.audit"):
         response = client.post(

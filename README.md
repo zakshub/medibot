@@ -54,6 +54,8 @@ Every response includes an opaque `X-Request-ID`. Audit events contain only that
 
 Runtime configuration is validated at startup. Unknown environments, unsafe request-size limits, malformed policy versions, and production debug mode stop the application instead of silently using unsafe values.
 
+`GET /v1/health` is a process-liveness check. `GET /v1/ready` is a separate traffic-readiness check and returns HTTP `503` while the policy version remains `unapproved`.
+
 ## Automated Checks
 
 Every push and pull request to `master` runs:

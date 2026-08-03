@@ -32,6 +32,13 @@ class HealthResponse(BaseModel):
     version: str
 
 
+class ReadinessResponse(BaseModel):
+    status: str
+    version: str
+    policy_version: str
+    reasons: list[str] = Field(default_factory=list)
+
+
 class MessageResponse(BaseModel):
     request_id: str
     route: MessageRoute
@@ -40,4 +47,3 @@ class MessageResponse(BaseModel):
     sources: list[dict[str, str]] = Field(default_factory=list)
     next_step: str
     policy_version: str
-

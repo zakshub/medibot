@@ -5,7 +5,13 @@ from fastapi.responses import JSONResponse
 from medibot.audit import AuditEvent, emit_audit_event
 from medibot.config import get_settings
 from medibot.middleware import RequestBodyLimitMiddleware, SecurityHeadersMiddleware
-from medibot.models import HealthResponse, MessageRequest, MessageResponse, MessageRoute
+from medibot.models import (
+    HealthResponse,
+    MessageRequest,
+    MessageResponse,
+    MessageRoute,
+    ReadinessResponse,
+)
 
 settings = get_settings()
 
@@ -40,6 +46,31 @@ async def validation_error_handler(
 @app.get("/v1/health", response_model=HealthResponse)
 def health() -> HealthResponse:
     return HealthResponse(status="ok", version=settings.app_version)
+
+
+@app.get(
+    "/v1/ready",
+    response_model=ReadinessResponse,
+    responses={status.HTTP_503_SERVICE_UNAVAILABLE: {"model": ReadinessResponse}},
+)
+def readiness() -> ReadinessResponse | JSONResponse:
+    if settings.policy_version == "unapproved":
+        response = ReadinessResponse(
+            status="not_ready",
+            version=settings.app_version,
+            policy_version=settings.policy_version,
+            reasons=["policy_unapproved"],
+        )
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content=response.model_dump(),
+        )
+
+    return ReadinessResponse(
+        status="ready",
+        version=settings.app_version,
+        policy_version=settings.policy_version,
+    )
 
 
 @app.post(
