@@ -1,0 +1,77 @@
+{
+  "dataset_id": "emergency-signals.synthetic-baseline",
+  "version": "1.0.0",
+  "expected_detector_version": "synthetic-reference-v1",
+  "synthetic": true,
+  "owner": "Medibot engineering",
+  "review_status": "engineering_only",
+  "reviewers": [],
+  "source_description": "Hand-authored synthetic strings created only for deterministic plumbing tests.",
+  "intended_use": "Regression testing of detector contracts, metrics, reports, and threshold handling.",
+  "prohibited_uses": [
+    "Clinical validation",
+    "Production triage",
+    "Claims about real-world safety or language coverage"
+  ],
+  "known_gaps": [
+    "No clinical review",
+    "No real-world language variation",
+    "No negation, misspelling, slang, or mixed-language challenge coverage"
+  ],
+  "thresholds": {
+    "min_case_pass_rate": 1.0,
+    "min_emergency_recall": 1.0,
+    "max_false_positive_rate": 0.0,
+    "max_unavailable_rate": 0.0
+  },
+  "cases": [
+    {
+      "case_id": "baseline.positive.urgent",
+      "synthetic": true,
+      "locale": "en-PK",
+      "message": "This is a synthetic urgent help example.",
+      "expected_status": "possible_emergency",
+      "expected_categories": ["time_sensitive_help"]
+    },
+    {
+      "case_id": "baseline.positive.danger",
+      "synthetic": true,
+      "locale": "en-PK",
+      "message": "This is a synthetic danger phrase example.",
+      "expected_status": "possible_emergency",
+      "expected_categories": ["immediate_danger"]
+    },
+    {
+      "case_id": "baseline.positive.combined",
+      "synthetic": true,
+      "locale": "en-GB",
+      "message": "Synthetic urgent help appears with a synthetic danger phrase.",
+      "expected_status": "possible_emergency",
+      "expected_categories": ["immediate_danger", "time_sensitive_help"]
+    },
+    {
+      "case_id": "baseline.negative.ordinary",
+      "synthetic": true,
+      "locale": "en-PK",
+      "message": "This is a synthetic ordinary request.",
+      "expected_status": "no_signal",
+      "expected_categories": []
+    },
+    {
+      "case_id": "baseline.negative.routine",
+      "synthetic": true,
+      "locale": "en-US",
+      "message": "This is a synthetic routine check example.",
+      "expected_status": "no_signal",
+      "expected_categories": []
+    },
+    {
+      "case_id": "baseline.negative.unrelated",
+      "synthetic": true,
+      "locale": "en-GB",
+      "message": "This synthetic line has no configured reference trigger.",
+      "expected_status": "no_signal",
+      "expected_categories": []
+    }
+  ]
+}

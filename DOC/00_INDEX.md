@@ -37,6 +37,7 @@ Last updated: 2026-08-03
 29. [29_Emergency_Response_Composer.md](./29_Emergency_Response_Composer.md)
 30. [30_UI_Scaffold.md](./30_UI_Scaffold.md)
 31. [31_Message_Orchestration.md](./31_Message_Orchestration.md)
+32. [32_Emergency_Evaluation_Harness.md](./32_Emergency_Evaluation_Harness.md)
 
 ## Folder Purpose
 

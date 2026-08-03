@@ -7,11 +7,12 @@ Medibot is an early-stage, safety-first medical-assistance bot with a typed API 
 ## Current Status
 
 - Documentation baseline: 95% complete
-- Repository, CI, and testing: 90% complete
+- Repository, CI, and testing: 92% complete
 - Backend API foundation: 72% complete
 - Medical bot UI: 35% complete
 - Actual medical bot behavior: 15% complete; guarded emergency plumbing only
-- Overall estimated implementation: 42% complete
+- Safety evaluation: 35% complete; engineering-only synthetic evidence
+- Overall estimated implementation: 45% complete
 
 See [DOC/10_Status_Tracker.md](DOC/10_Status_Tracker.md) for evidence, remaining work, and blockers. Percentages are planning estimates and do not represent clinical or release approval.
 
@@ -30,6 +31,7 @@ See [DOC/10_Status_Tracker.md](DOC/10_Status_Tracker.md) for evidence, remaining
 medibot/
 |-- src/medibot/     FastAPI application and browser UI
 |-- tests/           API, safety, repository, and UI regression tests
+|-- evaluations/     Versioned synthetic safety evaluation datasets
 |-- scripts/         Cross-platform verification commands
 |-- DOC/             Numbered project documentation
 |-- CONTRIBUTING.md  Contribution and review rules
@@ -88,6 +90,15 @@ Run the complete local verification sequence with one command:
 ```
 
 Linux and CI use `PYTHON=.venv/bin/python bash scripts/check.sh`. Both scripts run lint, tests/coverage, dependency consistency, vulnerability audit, and package build in the same order.
+
+Run the engineering-only emergency detector evaluations with:
+
+```powershell
+.venv\Scripts\python -m medibot.evaluation evaluations\emergency_signal_baseline.v1.json
+.venv\Scripts\python -m medibot.evaluation evaluations\emergency_signal_challenge.v1.json
+```
+
+The baseline passes deterministic plumbing. The challenge intentionally returns exit code `1` and exposes `0%` recall and a `50%` false-positive rate for the reference keyword detector. Details are in [DOC/32_Emergency_Evaluation_Harness.md](DOC/32_Emergency_Evaluation_Harness.md).
 
 ## Container
 

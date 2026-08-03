@@ -34,3 +34,9 @@ The keyword detector is a deterministic reference implementation for tests and p
 5. emergency resource registry integration;
 6. monitoring for unavailable detector state;
 7. rollback plan for detector or policy failures.
+
+## Current Evaluation Evidence
+
+The engineering-only synthetic baseline passes the deterministic keyword reference detector. The synthetic challenge suite fails as intended with `0%` emergency recall, `50%` false-positive rate, and `25%` case pass rate. This is direct evidence that the keyword implementation is plumbing, not an approved detector.
+
+See `32_Emergency_Evaluation_Harness.md` for commands, report boundaries, and remaining evidence.

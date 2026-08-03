@@ -55,3 +55,9 @@
 51. Bound emergency route policies to explicit detector-version allowlists and blocked unreviewed versions
 52. Split policy, detector, and registry dependency failures into bounded operational audit outcomes
 53. Made the UI asset regression test portable across standard Windows JavaScript MIME mappings
+54. Added a strict synthetic emergency evaluation dataset and case schema with review and usage metadata
+55. Added deterministic case, recall, false-positive, unavailable, and threshold report metrics
+56. Added privacy-safe evaluation reports that exclude scenario message text and detector exceptions
+57. Added passing baseline and intentionally failing negation, misspelling, and mixed-language challenge datasets
+58. Added a packaged evaluation command with explicit pass, threshold-failure, and load-failure exit codes
+59. Extended the line-ending policy to versioned JSON evaluation artifacts

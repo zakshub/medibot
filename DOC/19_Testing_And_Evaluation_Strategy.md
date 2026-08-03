@@ -74,6 +74,12 @@ Targets are TBD and require clinical/product approval.
 
 Aggregate metrics must not hide catastrophic individual failures. Every severe failure requires case review.
 
+### Implemented Engineering Harness
+
+The current synthetic emergency harness reports total pass rate, emergency recall, false-positive rate, unavailable rate, and individual bounded failure categories. It pins dataset and detector versions and returns a non-zero exit code when thresholds fail.
+
+The baseline dataset verifies plumbing only. The challenge dataset intentionally demonstrates keyword-detector failures under negation, misspelling, and mixed language. Neither dataset has clinical review or enough coverage to set production thresholds.
+
 ## 7. Regression Policy
 
 - Pin model, prompt, policy, content, and evaluation versions for each report.
@@ -98,7 +104,7 @@ Reviewers must assess frozen output from identified system versions, not an untr
 
 ## 9. CI Release Gates
 
-A future CI pipeline must block merge or release on:
+Current CI blocks merge on code, test, dependency, and package regressions. A future release pipeline must additionally block release on:
 
 - formatting, type, unit, or contract failures;
 - detected credentials or prohibited data files;
@@ -118,4 +124,3 @@ Each release candidate must include:
 - unresolved defects and accepted residual risks;
 - reviewer names and approval timestamps;
 - rollback target and verified rollback procedure.
-

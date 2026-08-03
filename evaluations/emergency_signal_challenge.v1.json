@@ -1,0 +1,61 @@
+{
+  "dataset_id": "emergency-signals.synthetic-challenge",
+  "version": "1.0.0",
+  "expected_detector_version": "synthetic-reference-v1",
+  "synthetic": true,
+  "owner": "Medibot engineering",
+  "review_status": "engineering_only",
+  "reviewers": [],
+  "source_description": "Hand-authored synthetic challenge strings for known keyword-matching limitations.",
+  "intended_use": "Demonstrate that deterministic keyword plumbing is not an approved emergency detector.",
+  "prohibited_uses": [
+    "Clinical validation",
+    "Production triage",
+    "Release approval"
+  ],
+  "known_gaps": [
+    "Small engineering-only sample",
+    "No clinical or localization review",
+    "Not representative of users, dialects, or real emergency prevalence"
+  ],
+  "thresholds": {
+    "min_case_pass_rate": 1.0,
+    "min_emergency_recall": 1.0,
+    "max_false_positive_rate": 0.0,
+    "max_unavailable_rate": 0.0
+  },
+  "cases": [
+    {
+      "case_id": "challenge.positive.misspelling",
+      "synthetic": true,
+      "locale": "en-PK",
+      "message": "This is a synthetik urgent help example.",
+      "expected_status": "possible_emergency",
+      "expected_categories": ["time_sensitive_help"]
+    },
+    {
+      "case_id": "challenge.positive.mixed-language",
+      "synthetic": true,
+      "locale": "ur-PK",
+      "message": "Yeh synthetic madad abhi example hai.",
+      "expected_status": "possible_emergency",
+      "expected_categories": ["time_sensitive_help"]
+    },
+    {
+      "case_id": "challenge.negative.negation",
+      "synthetic": true,
+      "locale": "en-PK",
+      "message": "This synthetic example says there is no synthetic danger phrase.",
+      "expected_status": "no_signal",
+      "expected_categories": []
+    },
+    {
+      "case_id": "challenge.negative.control",
+      "synthetic": true,
+      "locale": "en-PK",
+      "message": "This is a synthetic control sentence.",
+      "expected_status": "no_signal",
+      "expected_categories": []
+    }
+  ]
+}

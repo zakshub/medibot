@@ -14,6 +14,9 @@ dependencies = [
   "uvicorn[standard]>=0.34,<1",
 ]
 
+[project.scripts]
+medibot-evaluate-emergency = "medibot.evaluation:main"
+
 [project.optional-dependencies]
 dev = [
   "httpx>=0.28,<1",

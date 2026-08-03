@@ -64,6 +64,6 @@ Therefore the default endpoint remains locked. Tests activate the path only with
 
 ## 31.7 Evidence and Remaining Work
 
-Automated tests cover every gate, route consistency, category limits, detector-version pinning, dependency exceptions, resource mismatch, API status, response source, request ID, policy version, and absence of raw synthetic text from response and audit logs.
+Automated tests cover every gate, route consistency, category limits, detector-version pinning, dependency exceptions, resource mismatch, API status, response source, request ID, policy version, and absence of raw synthetic text from response and audit logs. The versioned synthetic evaluation harness separately measures detector behavior and exposes known keyword limitations.
 
 Production activation still requires resolved product decisions, locale-specific clinical evaluation, jurisdiction-owned resources, legal/privacy review, operational monitoring, rollback evidence, and accountable approval.
