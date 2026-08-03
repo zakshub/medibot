@@ -19,6 +19,7 @@ dev = [
   "httpx>=0.28,<1",
   "pip-audit>=2.9,<3",
   "pytest>=9.0.3,<10",
+  "pytest-cov>=7,<8",
   "ruff>=0.9,<1",
 ]
 
@@ -26,7 +27,7 @@ dev = [
 packages = ["src/medibot"]
 
 [tool.pytest.ini_options]
-addopts = "-q"
+addopts = "-q --cov=medibot --cov-report=term-missing --cov-fail-under=90"
 testpaths = ["tests"]
 
 [tool.ruff]

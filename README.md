@@ -73,6 +73,8 @@ Security concerns should follow [SECURITY.md](SECURITY.md) and must not include 
 
 Dependabot checks Python and GitHub Actions dependencies weekly. Updates still require the full CI and safety review; automated version proposals are not automatic release approval.
 
+The pytest command measures source coverage and fails below 90%. The current measured baseline is 94%; the floor prevents material regression without encouraging low-value tests solely to claim 100%.
+
 ## Safety Boundary
 
 Until a reviewed product specification exists, Medibot must:

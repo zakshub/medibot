@@ -14,6 +14,9 @@ venv/
 dist/
 build/
 coverage/
+.coverage
+coverage.xml
+htmlcov/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
@@ -35,4 +38,3 @@ Thumbs.db
 data/private/
 data/uploads/
 data/exports/
-
