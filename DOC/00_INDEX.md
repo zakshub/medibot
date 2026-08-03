@@ -1,0 +1,28 @@
+# Medic Documentation Index
+
+This folder is the master documentation set for the `medic` project.
+
+Last updated: 2026-08-03
+
+## Reading Order
+
+1. [01_Project_Overview.md](./01_Project_Overview.md)
+2. [02_Current_Repository_State.md](./02_Current_Repository_State.md)
+3. [03_Recommended_Folder_Structure.md](./03_Recommended_Folder_Structure.md)
+4. [04_Document_Naming_Standard.md](./04_Document_Naming_Standard.md)
+5. [05_Project_Setup_Workflow.md](./05_Project_Setup_Workflow.md)
+6. [06_Implementation_Checklist.md](./06_Implementation_Checklist.md)
+7. [07_Asset_Inventory_Template.md](./07_Asset_Inventory_Template.md)
+8. [08_Content_And_Script_Plan.md](./08_Content_And_Script_Plan.md)
+9. [09_Risk_Log.md](./09_Risk_Log.md)
+10. [10_Status_Tracker.md](./10_Status_Tracker.md)
+11. [11_Handoff_Notes_Template.md](./11_Handoff_Notes_Template.md)
+12. [12_Change_Log.md](./12_Change_Log.md)
+
+## Folder Purpose
+
+This `DOC` folder exists to keep planning, tracking, naming, structure, and handoff details in one place.
+
+## Usage Rule
+
+If the project gains real files, this documentation must be updated to reflect actual folders, assets, scripts, prompts, tooling, and delivery status.
