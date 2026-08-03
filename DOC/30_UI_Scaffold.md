@@ -26,6 +26,10 @@ The UI route is excluded from OpenAPI because the versioned API schema remains t
 7. Persistent emergency notice that does not claim to assess severity.
 8. DOM construction with `textContent` rather than untrusted HTML injection.
 9. No local storage, analytics, cookies, or browser-side persistence.
+10. No assumed country; emergency-resource lookup requires explicit selection.
+11. Independent health and readiness status handling.
+12. Assertive accessible announcement for a returned emergency route.
+13. Busy-state, focus, reduced-motion, landmark, and control-label support.
 
 ## 30.4 Security Boundary
 
@@ -39,7 +43,7 @@ Approved source links are restricted in the browser to HTTP and HTTPS protocols.
 2. Emergency responses require injected approved dependencies; the default runtime has none and remains locked.
 3. The language selector changes the request locale but the locked response is currently English only.
 4. There is no authentication, consent flow, conversation persistence, or user profile.
-5. Accessibility has structural labels, focus states, reduced-motion handling, and responsive behavior, but still needs automated and human audit evidence.
+5. Static accessibility regressions exist, but automated browser auditing, assistive-technology testing, and qualified human review are still required.
 
 ## 30.6 Verification
 

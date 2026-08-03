@@ -9,10 +9,10 @@ Medibot is an early-stage, safety-first medical-assistance bot with a typed API 
 - Documentation baseline: 95% complete
 - Repository, CI, and testing: 92% complete
 - Backend API foundation: 72% complete
-- Medical bot UI: 35% complete
+- Medical bot UI: 45% complete
 - Actual medical bot behavior: 15% complete; guarded emergency plumbing only
 - Safety evaluation: 35% complete; engineering-only synthetic evidence
-- Overall estimated implementation: 45% complete
+- Overall estimated implementation: 47% complete
 
 See [DOC/10_Status_Tracker.md](DOC/10_Status_Tracker.md) for evidence, remaining work, and blockers. Percentages are planning estimates and do not represent clinical or release approval.
 
@@ -134,6 +134,8 @@ Emergency signal detection must satisfy [DOC/28_Emergency_Signal_Detection.md](D
 Emergency responses must satisfy [DOC/29_Emergency_Response_Composer.md](DOC/29_Emergency_Response_Composer.md). A response can use only bounded detector decisions and approved emergency resources; normal health guidance remains unavailable.
 
 The medical bot interface is documented in [DOC/30_UI_Scaffold.md](DOC/30_UI_Scaffold.md). It exposes live service state and the bounded message contract without bypassing the current safety lock.
+
+UI location, persistence, accessibility, status-isolation, DOM, and responsive controls are documented in [DOC/33_UI_Accessibility_And_Privacy.md](DOC/33_UI_Accessibility_And_Privacy.md). The country selector intentionally starts empty; the interface does not infer jurisdiction from language or developer location.
 
 The guarded live gate order, HTTP behavior, audit outcomes, and activation boundary are documented in [DOC/31_Message_Orchestration.md](DOC/31_Message_Orchestration.md).
 

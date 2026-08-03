@@ -61,3 +61,8 @@
 57. Added passing baseline and intentionally failing negation, misspelling, and mixed-language challenge datasets
 58. Added a packaged evaluation command with explicit pass, threshold-failure, and load-failure exit codes
 59. Extended the line-ending policy to versioned JSON evaluation artifacts
+60. Removed the UI's assumed Pakistan location and now requires explicit country selection
+61. Isolated health and readiness status failures so one failed check cannot falsely mark both offline
+62. Added assertive emergency announcements, busy states, reduced-motion scrolling, and browser persistence hints
+63. Added static UI regressions for unique IDs, control labels, landmarks, CSP compatibility, unsafe DOM sinks, and privacy storage APIs
+64. Fixed conversation-header overflow across the 761-to-1050-pixel tablet breakpoint and visually verified the rendered layout

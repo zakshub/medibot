@@ -44,25 +44,36 @@ function formatReason(reason) {
   return reason.replaceAll("_", " ");
 }
 
+async function fetchJson(path) {
+  const response = await fetch(path, { headers: { Accept: "application/json" } });
+  return { body: await readJson(response), response };
+}
+
 async function refreshServiceStatus() {
   elements.refreshStatus.disabled = true;
-  try {
-    const [healthResponse, readyResponse] = await Promise.all([
-      fetch("/v1/health", { headers: { Accept: "application/json" } }),
-      fetch("/v1/ready", { headers: { Accept: "application/json" } }),
-    ]);
-    const health = await readJson(healthResponse);
-    const readiness = await readJson(readyResponse);
+  const [healthResult, readyResult] = await Promise.allSettled([
+    fetchJson("/v1/health"),
+    fetchJson("/v1/ready"),
+  ]);
 
-    if (healthResponse.ok && health) {
-      setStatus(elements.healthStatus, "Online", "status-good");
-      setText(elements.versionStatus, health.version || "Unknown");
-      elements.servicePill.className = "service-pill is-online";
-      setText(elements.serviceLabel, "API online");
-    } else {
-      throw new Error("Health check failed");
-    }
+  if (
+    healthResult.status === "fulfilled"
+    && healthResult.value.response.ok
+    && healthResult.value.body
+  ) {
+    setStatus(elements.healthStatus, "Online", "status-good");
+    setText(elements.versionStatus, healthResult.value.body.version || "Unknown");
+    elements.servicePill.className = "service-pill is-online";
+    setText(elements.serviceLabel, "API online");
+  } else {
+    setStatus(elements.healthStatus, "Offline", "status-bad");
+    setText(elements.versionStatus, "Unknown");
+    elements.servicePill.className = "service-pill is-offline";
+    setText(elements.serviceLabel, "API offline");
+  }
 
+  if (readyResult.status === "fulfilled") {
+    const { body: readiness, response: readyResponse } = readyResult.value;
     if (readyResponse.ok && readiness) {
       setStatus(elements.readyStatus, "Ready", "status-good");
       setStatus(elements.policyStatus, readiness.policy_version || "Unknown", "status-good");
@@ -88,17 +99,13 @@ async function refreshServiceStatus() {
       setStatus(elements.policyStatus, "Unknown", "status-bad");
       elements.readinessReasons.hidden = true;
     }
-  } catch {
-    setStatus(elements.healthStatus, "Offline", "status-bad");
+  } else {
     setStatus(elements.readyStatus, "Unknown", "status-bad");
     setStatus(elements.policyStatus, "Unknown", "status-bad");
-    setText(elements.versionStatus, "Unknown");
-    elements.servicePill.className = "service-pill is-offline";
-    setText(elements.serviceLabel, "API offline");
     elements.readinessReasons.hidden = true;
-  } finally {
-    elements.refreshStatus.disabled = false;
   }
+
+  elements.refreshStatus.disabled = false;
 }
 
 function createMeta(label, route) {
@@ -133,7 +140,12 @@ function appendUserMessage(message) {
   article.append(bubble);
 
   elements.messageFeed.append(article);
-  article.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  revealMessage(article);
+}
+
+function revealMessage(article) {
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  article.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "nearest" });
 }
 
 function appendSources(container, sources) {
@@ -177,6 +189,10 @@ function appendSources(container, sources) {
 function appendAssistantMessage(payload) {
   const article = document.createElement("article");
   article.className = "message message-assistant";
+  if (payload.route === "emergency") {
+    article.setAttribute("role", "alert");
+    article.setAttribute("aria-live", "assertive");
+  }
   article.append(createMeta("Medibot", payload.route || "service_unavailable"));
 
   const bubble = document.createElement("div");
@@ -210,7 +226,7 @@ function appendAssistantMessage(payload) {
   appendSources(bubble, payload.sources);
   article.append(bubble);
   elements.messageFeed.append(article);
-  article.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  revealMessage(article);
 
   if (payload.request_id || payload.route) {
     elements.requestCard.hidden = false;
@@ -243,6 +259,8 @@ async function submitMessage(event) {
   elements.messageInput.value = "";
   setText(elements.characterCount, "0 / 4000");
   elements.sendButton.disabled = true;
+  elements.form.setAttribute("aria-busy", "true");
+  elements.messageFeed.setAttribute("aria-busy", "true");
   setText(elements.sendLabel, "Sending...");
 
   const payload = {
@@ -278,6 +296,8 @@ async function submitMessage(event) {
     });
   } finally {
     elements.sendButton.disabled = false;
+    elements.form.setAttribute("aria-busy", "false");
+    elements.messageFeed.setAttribute("aria-busy", "false");
     setText(elements.sendLabel, "Send message");
     elements.messageInput.focus();
     refreshServiceStatus();

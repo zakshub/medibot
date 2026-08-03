@@ -38,6 +38,7 @@ Last updated: 2026-08-03
 30. [30_UI_Scaffold.md](./30_UI_Scaffold.md)
 31. [31_Message_Orchestration.md](./31_Message_Orchestration.md)
 32. [32_Emergency_Evaluation_Harness.md](./32_Emergency_Evaluation_Harness.md)
+33. [33_UI_Accessibility_And_Privacy.md](./33_UI_Accessibility_And_Privacy.md)
 
 ## Folder Purpose
 
