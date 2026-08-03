@@ -26,3 +26,4 @@
 22. Added explicit OpenAPI error contracts and schema-regression tests
 23. Migrated HTTP tests to async ASGI transport and removed deprecated TestClient usage
 24. Added measured source-coverage reporting with a 90 percent CI regression floor
+25. Added a non-root multi-stage container, liveness healthcheck, Docker CI build, and deployment boundaries

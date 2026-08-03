@@ -23,3 +23,13 @@ updates:
     labels:
       - dependencies
 
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Asia/Karachi
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies

@@ -75,6 +75,15 @@ Dependabot checks Python and GitHub Actions dependencies weekly. Updates still r
 
 The pytest command measures source coverage and fails below 90%. The current measured baseline is 94%; the floor prevents material regression without encouraging low-value tests solely to claim 100%.
 
+## Container
+
+```powershell
+docker build --tag medibot:local .
+docker run --rm --publish 8000:8000 medibot:local
+```
+
+The image runs as a non-root user and its healthcheck verifies process liveness only. Deployment traffic must use `/v1/ready`; the service remains intentionally not ready for medical guidance.
+
 ## Safety Boundary
 
 Until a reviewed product specification exists, Medibot must:

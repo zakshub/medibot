@@ -1,0 +1,16 @@
+.git
+.github
+.venv
+.coverage
+.env
+DOC
+build
+coverage
+dist
+htmlcov
+tests
+**/__pycache__
+**/*.pyc
+*.log
+*.sqlite*
+
