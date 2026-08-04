@@ -24,6 +24,11 @@ class VideoCandidate:
     topic: str
     title: str
     script: str
+    source_path: str | None = None
+    duration_seconds: float | None = None
+    language: str = "en"
+    style_tags: tuple[str, ...] = ()
+    asset_sha256: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -94,6 +99,8 @@ class DatasetCatalog:
 
     @staticmethod
     def content_hash(candidate: VideoCandidate) -> str:
+        if candidate.asset_sha256 is not None:
+            return candidate.asset_sha256
         normalized = "\n".join(
             (
                 candidate.topic.strip().casefold(),
@@ -177,4 +184,3 @@ class AdaptiveScheduler:
             topic_scores.get(chosen.topic.casefold(), 0.0),
             ("domain_verified", "topic_performance_score", timing),
         )
-

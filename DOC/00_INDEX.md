@@ -1,4 +1,4 @@
-# Medic Documentation Index
+﻿# Medic Documentation Index
 
 This folder is the master documentation set for the `medic` project.
 
@@ -40,6 +40,8 @@ Last updated: 2026-08-03
 32. [32_Emergency_Evaluation_Harness.md](./32_Emergency_Evaluation_Harness.md)
 33. [33_UI_Accessibility_And_Privacy.md](./33_UI_Accessibility_And_Privacy.md)
 34. [34_Scope_And_Refusal_Routing.md](./34_Scope_And_Refusal_Routing.md)
+35. [35_Self_Learning_Video_Foundation.md](./35_Self_Learning_Video_Foundation.md)
+36. [36_Persistent_Dataset_And_Learning_Store.md](./36_Persistent_Dataset_And_Learning_Store.md)
 
 ## Folder Purpose
 

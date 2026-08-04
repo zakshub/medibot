@@ -39,3 +39,4 @@ Thumbs.db
 data/private/
 data/uploads/
 data/exports/
+.test-tmp/

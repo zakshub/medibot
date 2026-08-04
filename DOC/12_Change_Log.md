@@ -72,3 +72,6 @@
 68. Added emergency-first orchestration so scope handling cannot suppress a possible emergency response
 69. Added bounded unsupported and prohibited response composers with no medical guidance or sources
 70. Added API, audit, policy, dependency-failure, precedence, privacy, and response regression coverage for scope routing
+71. Realigned the product core to a domain-locked self-learning medical video system
+72. Added safe operator dataset manifests, source confinement, and duplicate asset hashing
+73. Added persistent SQLite domain, video, insight, status, and schedule-decision records
