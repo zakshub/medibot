@@ -20,6 +20,7 @@ from medibot.generation import (
     ContentBrief,
     ContentGenerationPipeline,
 )
+from medibot.job_queue import DurableJobQueue, JobKind, JobRecord
 from medibot.learning import DailyPerformance
 from medibot.media import LocalVerticalVideoRenderer
 from medibot.video_store import VideoStore
@@ -91,10 +92,42 @@ class ScheduleCreate(StrictModel):
     recent_performance: list[DailyPerformanceInput] = Field(default_factory=list, max_length=30)
 
 
+class JobCreate(StrictModel):
+    kind: JobKind
+    payload: dict[str, object] = Field(default_factory=dict)
+    idempotency_key: str = Field(
+        min_length=1,
+        max_length=200,
+        pattern=r"^[A-Za-z0-9][A-Za-z0-9:._-]*$",
+    )
+    available_at: AwareDatetime | None = None
+    max_attempts: int = Field(default=5, ge=1, le=20)
+
+
+def _job_payload(job: JobRecord) -> dict[str, object]:
+    return {
+        "job_id": job.job_id,
+        "kind": job.kind.value,
+        "payload": job.payload,
+        "idempotency_key": job.idempotency_key,
+        "status": job.status.value,
+        "attempts": job.attempts,
+        "max_attempts": job.max_attempts,
+        "available_at": job.available_at.isoformat(),
+        "lease_owner": job.lease_owner,
+        "lease_expires_at": (job.lease_expires_at.isoformat() if job.lease_expires_at else None),
+        "result": job.result,
+        "error_code": job.error_code,
+        "created_at": job.created_at.isoformat(),
+        "updated_at": job.updated_at.isoformat(),
+    }
+
+
 def create_video_router(
     settings: Settings,
     store: VideoStore,
     artifacts: LocalArtifactStore,
+    jobs: DurableJobQueue,
     *,
     clock: Callable[[], datetime] | None = None,
     renderer_factory: Callable[[], LocalVerticalVideoRenderer] | None = None,
@@ -126,12 +159,14 @@ def create_video_router(
     @router.get("/status")
     def video_status() -> dict[str, object]:
         counts = store.counts()
+        job_counts = jobs.counts()
         inventory = store.list_video_summaries()
         profiles = store.list_domain_profile_names()
         return {
             "status": "operational_local" if settings.environment != "production" else "configured",
             "product": "domain-locked self-learning medical video generator",
             "counts": counts,
+            "job_counts": job_counts,
             "domain_profiles": profiles,
             "videos_by_status": {
                 name: sum(item["status"] == name for item in inventory)
@@ -154,15 +189,59 @@ def create_video_router(
                 "anti_spam_scheduler": True,
                 "platform_adapters": ["youtube", "instagram", "facebook", "x"],
                 "live_platform_credentials": False,
+                "cloud_artifact_mirror": True,
+                "durable_worker_leases": True,
             },
-            "implementation_percent": 65,
+            "implementation_percent": 72,
             "production_ready": False,
             "blocking_reasons": [
                 "voice_provider_not_configured",
                 "operator_platform_credentials_not_configured",
                 "platform_app_approvals_not_verified",
+                "cloud_artifact_credentials_not_configured",
             ],
         }
+
+    @router.post("/jobs", status_code=status.HTTP_201_CREATED)
+    def enqueue_job(payload: JobCreate) -> dict[str, object]:
+        try:
+            job = jobs.enqueue(
+                payload.kind,
+                payload.payload,
+                idempotency_key=payload.idempotency_key,
+                now=now(),
+                available_at=payload.available_at,
+                max_attempts=payload.max_attempts,
+            )
+        except ValueError as exc:
+            code = (
+                status.HTTP_409_CONFLICT
+                if "already belongs to a different job" in str(exc)
+                else status.HTTP_422_UNPROCESSABLE_CONTENT
+            )
+            raise HTTPException(code, str(exc)) from exc
+        return _job_payload(job)
+
+    @router.get("/jobs/counts")
+    def job_counts() -> dict[str, object]:
+        return {"counts": jobs.counts()}
+
+    @router.get("/jobs/{job_id}")
+    def get_job(job_id: str) -> dict[str, object]:
+        try:
+            job = jobs.get(job_id)
+        except ValueError as exc:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "Job was not found.") from exc
+        if job is None:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "Job was not found.")
+        return _job_payload(job)
+
+    @router.post("/jobs/{job_id}/cancel")
+    def cancel_job(job_id: str) -> dict[str, object]:
+        try:
+            return _job_payload(jobs.cancel(job_id, now=now()))
+        except ValueError as exc:
+            raise HTTPException(status.HTTP_409_CONFLICT, str(exc)) from exc
 
     @router.put("/domain")
     def update_domain(payload: DomainUpdate) -> dict[str, object]:

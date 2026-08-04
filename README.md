@@ -11,7 +11,7 @@ artifact hash, credentials, and platform configuration.
 
 ## Honest Status
 
-- Local implementation: **65% done, 35% remaining**.
+- Local implementation: **72% done, 28% remaining**.
 - Production readiness: **25% done, 75% remaining**.
 - No live social-platform request has been made and no social API credits have been consumed.
 - Local preview rendering is credit-free and runs through bundled FFmpeg/Pillow code.
@@ -29,12 +29,14 @@ Implemented now:
 - normalized platform insight ingestion;
 - idempotent publication jobs with bounded retry behavior;
 - responsive operator dashboard and authenticated operator API boundary.
+- encrypted, hash-verified S3-compatible artifact mirroring with bounded signed URLs;
+- durable idempotent worker jobs with exclusive leases, crash recovery, and bounded retries.
 
 Still required for a live deployment:
 
 - a selected narration/voice provider and generated audio track;
-- S3-compatible or another approved cloud artifact store;
-- an always-on scheduler/worker process;
+- operator cloud bucket, identity/role, encryption key, retention, and backup configuration;
+- concrete render/publish/insight handlers running in an always-on worker process;
 - operator-owned OAuth credentials, platform IDs, quotas, and app approvals;
 - live adapter sandbox verification;
 - policy revision history, revocation, audit export, and rollback UI;
@@ -91,7 +93,7 @@ adaptive 1-5/day schedule -> platform adapter -> insights
 
 ```powershell
 python -m ruff check .
-python -m pytest -p no:asyncio --basetemp=.test-tmp
+python -m pytest --basetemp=.test-tmp
 ```
 
 The tests cover domain rejection, duplicate content, path traversal, provenance, rendering,

@@ -18,6 +18,7 @@ def settings_for(tmp_path: Path, **overrides: object) -> Settings:
     values: dict[str, object] = {
         "environment": "test",
         "video_database_path": tmp_path / "runtime" / "video.sqlite3",
+        "job_database_path": tmp_path / "runtime" / "jobs.sqlite3",
         "dataset_directory": tmp_path / "dataset",
         "artifact_directory": tmp_path / "artifacts",
         "_env_file": None,
@@ -219,6 +220,40 @@ async def test_preview_rejects_duplicates_and_out_of_domain_content(
     assert rejected.status_code == 422
     inventory = await video_client.get("/v1/video/videos")
     assert [item["candidate_id"] for item in inventory.json()["videos"]] == ["sleep-preview-001"]
+
+
+async def test_operator_can_manage_durable_jobs(video_client: AsyncClient) -> None:
+    request = {
+        "kind": "mirror_artifact",
+        "payload": {"artifact_key": "previews/video-1/preview.mp4"},
+        "idempotency_key": "mirror:video-1",
+        "max_attempts": 3,
+    }
+    created = await video_client.post("/v1/video/jobs", json=request)
+    assert created.status_code == 201
+    job = created.json()
+    assert job["status"] == "queued"
+    assert job["attempts"] == 0
+
+    same = await video_client.post("/v1/video/jobs", json=request)
+    loaded = await video_client.get(f"/v1/video/jobs/{job['job_id']}")
+    counts = await video_client.get("/v1/video/jobs/counts")
+    cancelled = await video_client.post(f"/v1/video/jobs/{job['job_id']}/cancel")
+
+    assert same.json()["job_id"] == job["job_id"]
+    assert loaded.json()["idempotency_key"] == "mirror:video-1"
+    assert counts.json() == {"counts": {"queued": 1}}
+    assert cancelled.json()["status"] == "cancelled"
+
+    secret = await video_client.post(
+        "/v1/video/jobs",
+        json={
+            "kind": "publish",
+            "payload": {"access_token": "must-not-persist"},
+            "idempotency_key": "publish:secret-test",
+        },
+    )
+    assert secret.status_code == 422
 
 
 async def test_failed_renderer_does_not_register_video(tmp_path: Path) -> None:

@@ -97,3 +97,10 @@
 93. Added end-to-end tests from seed import through rendered approval, scheduling, and learning insight
 94. Visually verified desktop and 390-pixel mobile layouts with live API state and no overflow
 95. Rewrote the repository entry point and status tracker around the actual video automation product
+96. Added encrypted S3-compatible artifact mirroring with remote hash and size verification
+97. Added bounded HTTPS signed artifact URLs and verified cloud downloads
+98. Added durable idempotent automation jobs with exclusive SQLite leases and crash recovery
+99. Added heartbeat, delayed retry, max-attempt, cancellation, and bounded failure transitions
+100. Rejected credential-like fields and oversized JSON from persistent job payloads and results
+101. Added authenticated operator job create, count, detail, and cancel routes
+102. Aligned the development pytest range with installed async tooling and removed the local plugin workaround

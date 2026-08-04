@@ -28,6 +28,10 @@ The chatbot remains available at `/legacy`.
 | `POST /v1/video/videos/{id}/approve` | Approves only rendered, hash-verified output |
 | `POST /v1/video/insights` | Adds normalized performance evidence |
 | `POST /v1/video/schedule/recommend` | Recommends and atomically reserves the next safe slot |
+| `POST /v1/video/jobs` | Enqueues an idempotent durable automation job |
+| `GET /v1/video/jobs/counts` | Returns queue counts by state |
+| `GET /v1/video/jobs/{id}` | Returns bounded job state without credentials |
+| `POST /v1/video/jobs/{id}/cancel` | Cancels only queued or retry-wait work |
 
 ## Security Boundary
 
@@ -67,6 +71,6 @@ Generated QA screenshots remain under `data/artifacts/qa/` locally and are ignor
 
 ## Remaining Boundary
 
-The dashboard does not claim live production readiness. Voice/audio, cloud storage, durable workers,
-platform credentials/app approvals, policy rollback, and live publishing controls remain separate
-required workstreams.
+The dashboard does not claim live production readiness. Voice/audio, live cloud configuration,
+always-on worker handlers, platform credentials/app approvals, policy rollback, and live publishing
+controls remain separate required workstreams.

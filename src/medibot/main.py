@@ -12,6 +12,7 @@ from medibot.audit import AuditEvent, emit_audit_event
 from medibot.config import Settings, get_settings
 from medibot.content import ContentRepository, EmptyContentRepository
 from medibot.emergency import EmergencyResourceRegistry, EmptyEmergencyResourceRegistry
+from medibot.job_queue import DurableJobQueue
 from medibot.media import LocalVerticalVideoRenderer
 from medibot.middleware import RequestBodyLimitMiddleware, SecurityHeadersMiddleware
 from medibot.models import (
@@ -39,12 +40,14 @@ def create_app(
     scope_signal_detector: ScopeSignalDetector | None = None,
     video_store: VideoStore | None = None,
     artifact_store: LocalArtifactStore | None = None,
+    job_queue: DurableJobQueue | None = None,
     video_clock: Callable[[], datetime] | None = None,
     video_renderer_factory: Callable[[], LocalVerticalVideoRenderer] | None = None,
 ) -> FastAPI:
     settings = app_settings or get_settings()
     videos = video_store or VideoStore(settings.video_database_path)
     video_artifacts = artifact_store or LocalArtifactStore(settings.artifact_directory)
+    jobs = job_queue or DurableJobQueue(settings.job_database_path)
     repository = content_repository if content_repository is not None else EmptyContentRepository()
     policies = policy_repository if policy_repository is not None else EmptyPolicyRepository()
     emergency_resources = (
@@ -72,6 +75,7 @@ def create_app(
     application.state.scope_signal_detector = scope_detector
     application.state.video_store = videos
     application.state.video_artifacts = video_artifacts
+    application.state.job_queue = jobs
     application.state.message_orchestrator = MessageOrchestrator(
         policy_repository=policies,
         emergency_signal_detector=emergency_detector,
@@ -200,6 +204,7 @@ def create_app(
             settings,
             videos,
             video_artifacts,
+            jobs,
             clock=video_clock,
             renderer_factory=video_renderer_factory,
         )

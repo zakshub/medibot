@@ -47,6 +47,7 @@ Last updated: 2026-08-04
 39. [39_Online_Learning_And_Automation_Planner.md](./39_Online_Learning_And_Automation_Planner.md)
 40. [40_Multi_Platform_Publishing_And_Insights.md](./40_Multi_Platform_Publishing_And_Insights.md)
 41. [41_Operator_Dashboard_And_API.md](./41_Operator_Dashboard_And_API.md)
+42. [42_Cloud_Artifacts_And_Durable_Workers.md](./42_Cloud_Artifacts_And_Durable_Workers.md)
 
 ## Folder Purpose
 

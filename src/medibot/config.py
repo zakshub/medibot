@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     rate_limit_window_seconds: int = Field(default=60, ge=1, le=3_600)
     debug: bool = False
     video_database_path: Path = Path("data/runtime/video.sqlite3")
+    job_database_path: Path = Path("data/runtime/jobs.sqlite3")
     dataset_directory: Path = Path("data/dataset")
     artifact_directory: Path = Path("data/artifacts")
     operator_api_key: SecretStr | None = None

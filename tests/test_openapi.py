@@ -17,6 +17,10 @@ def test_openapi_contains_versioned_product_routes() -> None:
         "/v1/video/videos/{candidate_id}/approve",
         "/v1/video/insights",
         "/v1/video/schedule/recommend",
+        "/v1/video/jobs",
+        "/v1/video/jobs/counts",
+        "/v1/video/jobs/{job_id}",
+        "/v1/video/jobs/{job_id}/cancel",
     }
     assert schema["info"]["version"] == "0.1.0"
 
