@@ -18,6 +18,10 @@ dependencies = [
 medibot-evaluate-emergency = "medibot.evaluation:main"
 
 [project.optional-dependencies]
+media = [
+  "imageio-ffmpeg>=0.6,<1",
+  "pillow>=10,<13",
+]
 dev = [
   "httpx>=0.28,<1",
   "pip-audit>=2.9,<3",

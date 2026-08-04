@@ -77,3 +77,5 @@
 73. Added persistent SQLite domain, video, insight, status, and schedule-decision records
 74. Added provenance-gated scripts and domain revalidation after narration assembly
 75. Added atomic local artifact storage and safe browser-openable storyboard previews
+76. Added a credit-free local vertical H.264 MP4 preview renderer
+77. Added media signature verification and fail-closed publishability gates
