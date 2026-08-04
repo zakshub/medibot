@@ -82,3 +82,7 @@
 78. Added explainable online strategy learning with bounded exploration and confidence
 79. Added evidence-based one-to-five daily frequency control with incident backoff
 80. Added approved-only duplicate-safe automation schedule planning
+81. Added official-flow YouTube, Instagram, Facebook, and X publishing adapters
+82. Added trusted upload-host, platform-ID, artifact-hash, audio, and approval gates
+83. Added four-platform insight normalization into the online-learning reward contract
+84. Added persistent concurrent-safe publication idempotency and bounded retries
