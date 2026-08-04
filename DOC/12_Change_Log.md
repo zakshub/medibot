@@ -79,3 +79,6 @@
 75. Added atomic local artifact storage and safe browser-openable storyboard previews
 76. Added a credit-free local vertical H.264 MP4 preview renderer
 77. Added media signature verification and fail-closed publishability gates
+78. Added explainable online strategy learning with bounded exploration and confidence
+79. Added evidence-based one-to-five daily frequency control with incident backoff
+80. Added approved-only duplicate-safe automation schedule planning

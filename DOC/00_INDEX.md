@@ -44,6 +44,7 @@ Last updated: 2026-08-03
 36. [36_Persistent_Dataset_And_Learning_Store.md](./36_Persistent_Dataset_And_Learning_Store.md)
 37. [37_Provenance_Gated_Content_Generation.md](./37_Provenance_Gated_Content_Generation.md)
 38. [38_Local_Vertical_MP4_Renderer.md](./38_Local_Vertical_MP4_Renderer.md)
+39. [39_Online_Learning_And_Automation_Planner.md](./39_Online_Learning_And_Automation_Planner.md)
 
 ## Folder Purpose
 
