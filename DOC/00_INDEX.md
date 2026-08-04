@@ -42,6 +42,7 @@ Last updated: 2026-08-03
 34. [34_Scope_And_Refusal_Routing.md](./34_Scope_And_Refusal_Routing.md)
 35. [35_Self_Learning_Video_Foundation.md](./35_Self_Learning_Video_Foundation.md)
 36. [36_Persistent_Dataset_And_Learning_Store.md](./36_Persistent_Dataset_And_Learning_Store.md)
+37. [37_Provenance_Gated_Content_Generation.md](./37_Provenance_Gated_Content_Generation.md)
 
 ## Folder Purpose
 

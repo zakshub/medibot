@@ -75,3 +75,5 @@
 71. Realigned the product core to a domain-locked self-learning medical video system
 72. Added safe operator dataset manifests, source confinement, and duplicate asset hashing
 73. Added persistent SQLite domain, video, insight, status, and schedule-decision records
+74. Added provenance-gated scripts and domain revalidation after narration assembly
+75. Added atomic local artifact storage and safe browser-openable storyboard previews
