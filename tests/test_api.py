@@ -71,9 +71,7 @@ def synthetic_scope_policy() -> PolicyVersion:
         policy_id="message.safety",
         version="synthetic-scope-policy-v1",
         status=PolicyStatus.APPROVED,
-        permitted_routes=frozenset(
-            {MessageRoute.EMERGENCY, MessageRoute.UNSUPPORTED}
-        ),
+        permitted_routes=frozenset({MessageRoute.EMERGENCY, MessageRoute.UNSUPPORTED}),
         permitted_detector_versions=frozenset({"synthetic-detector-v1"}),
         permitted_scope_detector_versions=frozenset({"synthetic-scope-v1"}),
         approved_by="Synthetic safety reviewer",
@@ -129,6 +127,7 @@ async def test_responses_include_security_headers(client: AsyncClient) -> None:
         "connect-src 'self'; "
         "script-src 'self'; "
         "style-src 'self'; "
+        "media-src 'self'; "
         "base-uri 'none'; "
         "form-action 'self'; "
         "frame-ancestors 'none'"
@@ -290,9 +289,7 @@ async def test_messages_return_emergency_only_with_complete_approved_chain(
     payload = response.json()
     assert payload["route"] == "emergency"
     assert payload["policy_version"] == "synthetic-policy-v1"
-    assert payload["next_step"] == (
-        "Use the approved synthetic emergency contact channel."
-    )
+    assert payload["next_step"] == ("Use the approved synthetic emergency contact channel.")
     assert payload["request_id"] == response.headers["x-request-id"]
     assert "synthetic danger" not in response.text.lower()
     assert "synthetic danger" not in caplog.text.lower()
@@ -318,9 +315,7 @@ async def test_messages_return_unsupported_only_after_emergency_no_signal(
         detector_version="synthetic-detector-v1",
     )
     scope_detector = KeywordScopeSignalDetector(
-        unsupported_keywords={
-            "synthetic outside scope": frozenset({"outside_scope"})
-        },
+        unsupported_keywords={"synthetic outside scope": frozenset({"outside_scope"})},
         prohibited_keywords={},
         detector_version="synthetic-scope-v1",
     )

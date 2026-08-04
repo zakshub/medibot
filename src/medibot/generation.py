@@ -1,4 +1,4 @@
-﻿"""Provenance-gated content planning and browser-preview generation."""
+"""Provenance-gated content planning and browser-preview generation."""
 
 import html
 import json
@@ -44,6 +44,7 @@ class ScriptPackage:
 @dataclass(frozen=True, slots=True)
 class GenerationResult:
     content_id: str
+    package: ScriptPackage
     script: StoredArtifact
     storyboard: StoredArtifact
     preview: StoredArtifact
@@ -62,8 +63,7 @@ class ReviewedTemplateScriptGenerator:
         if not brief.facts:
             raise ValueError("at least one approved fact is required")
         if any(
-            not fact.approval_id.strip()
-            or not fact.source_url.startswith(("https://", "http://"))
+            not fact.approval_id.strip() or not fact.source_url.startswith(("https://", "http://"))
             for fact in brief.facts
         ):
             raise ValueError("every fact requires an approval ID and HTTP source")
@@ -86,9 +86,7 @@ class HtmlStoryboardRenderer:
             f'<article class="scene"><span>{index:02d}</span><p>{html.escape(scene)}</p></article>'
             for index, scene in enumerate(package.scenes, start=1)
         )
-        source_markup = "".join(
-            f"<li>{html.escape(source)}</li>" for source in package.source_urls
-        )
+        source_markup = "".join(f"<li>{html.escape(source)}</li>" for source in package.source_urls)
         return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -170,6 +168,7 @@ class ContentGenerationPipeline:
         )
         return GenerationResult(
             brief.content_id,
+            package,
             script,
             storyboard,
             preview,

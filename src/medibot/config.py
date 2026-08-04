@@ -1,7 +1,8 @@
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, model_validator
+from pydantic import Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -19,6 +20,10 @@ class Settings(BaseSettings):
     rate_limit_requests: int = Field(default=60, ge=1, le=10_000)
     rate_limit_window_seconds: int = Field(default=60, ge=1, le=3_600)
     debug: bool = False
+    video_database_path: Path = Path("data/runtime/video.sqlite3")
+    dataset_directory: Path = Path("data/dataset")
+    artifact_directory: Path = Path("data/artifacts")
+    operator_api_key: SecretStr | None = None
 
     model_config = SettingsConfigDict(
         env_prefix="MEDIBOT_",
@@ -30,6 +35,8 @@ class Settings(BaseSettings):
     def reject_production_debug(self) -> "Settings":
         if self.environment == "production" and self.debug:
             raise ValueError("debug mode is prohibited in production")
+        if self.environment == "production" and self.operator_api_key is None:
+            raise ValueError("operator API key is required in production")
         return self
 
 

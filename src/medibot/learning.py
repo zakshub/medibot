@@ -1,4 +1,4 @@
-﻿"""Explainable online learning for content strategy and posting frequency."""
+"""Explainable online learning for content strategy and posting frequency."""
 
 import math
 from dataclasses import dataclass
@@ -106,12 +106,12 @@ class OnlineStrategyLearner:
                 score = mean + bonus
             scored.append((score, variant, mean, count))
 
-        score, variant, mean, count = max(
+        score, variant, mean, count = min(
             scored,
             key=lambda item: (
-                item[0],
-                item[1].topic,
+                -item[0],
                 item[1].posting_hour,
+                item[1].topic,
                 item[1].style,
                 item[1].duration_bucket,
             ),

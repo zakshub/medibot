@@ -1,11 +1,38 @@
 from medibot.main import create_app
 
 
-def test_openapi_contains_versioned_public_routes() -> None:
+def test_openapi_contains_versioned_product_routes() -> None:
     schema = create_app().openapi()
 
-    assert set(schema["paths"]) == {"/v1/health", "/v1/ready", "/v1/messages"}
+    assert set(schema["paths"]) == {
+        "/v1/health",
+        "/v1/ready",
+        "/v1/messages",
+        "/v1/video/status",
+        "/v1/video/domain",
+        "/v1/video/dataset",
+        "/v1/video/videos",
+        "/v1/video/previews",
+        "/v1/video/previews/{content_id}/storyboard",
+        "/v1/video/videos/{candidate_id}/approve",
+        "/v1/video/insights",
+        "/v1/video/schedule/recommend",
+    }
     assert schema["info"]["version"] == "0.1.0"
+
+
+def test_video_operator_routes_document_api_key_security() -> None:
+    schema = create_app().openapi()
+    security_schemes = schema["components"]["securitySchemes"]
+
+    assert security_schemes == {
+        "APIKeyHeader": {"type": "apiKey", "in": "header", "name": "X-Operator-Key"}
+    }
+    for path, operations in schema["paths"].items():
+        if not path.startswith("/v1/video/"):
+            continue
+        for operation in operations.values():
+            assert operation["security"] == [{"APIKeyHeader": []}]
 
 
 def test_message_contract_documents_all_bounded_responses() -> None:
@@ -16,9 +43,7 @@ def test_message_contract_documents_all_bounded_responses() -> None:
         schema_ref = operation["responses"][status_code]["content"]["application/json"]["schema"]
         assert schema_ref == {"$ref": "#/components/schemas/ErrorResponse"}
 
-    unavailable_schema = operation["responses"]["503"]["content"]["application/json"][
-        "schema"
-    ]
+    unavailable_schema = operation["responses"]["503"]["content"]["application/json"]["schema"]
     assert unavailable_schema == {"$ref": "#/components/schemas/MessageResponse"}
 
 

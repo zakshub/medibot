@@ -61,7 +61,7 @@ class RequestBodyLimitMiddleware:
                 "error": {
                     "code": "REQUEST_TOO_LARGE",
                     "message": "The request body is too large.",
-                }
+                },
             },
         )
         await response(scope, receive, send)
@@ -75,6 +75,7 @@ class SecurityHeadersMiddleware:
             "connect-src 'self'; "
             "script-src 'self'; "
             "style-src 'self'; "
+            "media-src 'self'; "
             "base-uri 'none'; "
             "form-action 'self'; "
             "frame-ancestors 'none'"

@@ -1,5 +1,6 @@
-﻿from pathlib import Path
+from pathlib import Path
 
+import imageio_ffmpeg
 import pytest
 
 from medibot.generation import ScriptPackage
@@ -20,15 +21,17 @@ def package() -> ScriptPackage:
 def test_local_renderer_creates_real_vertical_mp4(tmp_path: Path) -> None:
     renderer = LocalVerticalVideoRenderer(width=180, height=320, fps=4)
 
-    result = renderer.render(
-        package(), duration_seconds=1, output_path=tmp_path / "preview.mp4"
-    )
+    result = renderer.render(package(), duration_seconds=1, output_path=tmp_path / "preview.mp4")
 
     payload = result.path.read_bytes()
+    reader = imageio_ffmpeg.read_frames(str(result.path), pix_fmt="rgb24")
+    metadata = next(reader)
+    reader.close()
     assert b"ftyp" in payload[:64]
     assert result.size_bytes > 1_024
     assert len(result.sha256) == 64
     assert (result.width, result.height, result.fps) == (180, 320, 4)
+    assert metadata["size"] == (180, 320)
     assert result.has_audio is False
     assert result.publishable is False
     with pytest.raises(ValueError, match="voice_track_missing"):
@@ -70,4 +73,3 @@ def test_renderer_requires_scene(tmp_path: Path) -> None:
     renderer = LocalVerticalVideoRenderer(width=180, height=320, fps=4)
     with pytest.raises(ValueError, match="scene"):
         renderer.render(empty, duration_seconds=1, output_path=tmp_path / "empty.mp4")
-

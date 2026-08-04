@@ -1,4 +1,4 @@
-﻿"""Local vertical MP4 rendering and publishability gates."""
+"""Local vertical MP4 rendering and publishability gates."""
 
 import textwrap
 from dataclasses import dataclass
@@ -122,7 +122,9 @@ class LocalVerticalVideoRenderer:
             fps=self.fps,
             codec="libx264",
             pix_fmt_in="rgb24",
-            output_params=["-pix_fmt", "yuv420p", "-movflags", "+faststart"],
+            pix_fmt_out="yuv420p",
+            macro_block_size=2,
+            output_params=["-movflags", "+faststart"],
         )
         writer.send(None)
         total_frames = max(len(package.scenes), round(duration_seconds * self.fps))
@@ -164,4 +166,3 @@ def require_publishable(result: VideoRenderResult) -> None:
     if not result.publishable or result.blocking_reasons:
         reasons = ",".join(result.blocking_reasons) or "render_not_publishable"
         raise ValueError(f"video is not publishable: {reasons}")
-

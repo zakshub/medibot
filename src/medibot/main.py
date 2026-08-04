@@ -1,3 +1,5 @@
+from collections.abc import Callable
+from datetime import datetime
 from pathlib import Path
 
 from fastapi import FastAPI, Request, status
@@ -5,10 +7,12 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+from medibot.artifact_store import LocalArtifactStore
 from medibot.audit import AuditEvent, emit_audit_event
 from medibot.config import Settings, get_settings
 from medibot.content import ContentRepository, EmptyContentRepository
 from medibot.emergency import EmergencyResourceRegistry, EmptyEmergencyResourceRegistry
+from medibot.media import LocalVerticalVideoRenderer
 from medibot.middleware import RequestBodyLimitMiddleware, SecurityHeadersMiddleware
 from medibot.models import (
     ErrorResponse,
@@ -22,6 +26,8 @@ from medibot.policy import EmptyPolicyRepository, PolicyRepository
 from medibot.rate_limit import FixedWindowRateLimitMiddleware
 from medibot.routing import EmergencySignalDetector, EmptyEmergencySignalDetector
 from medibot.scope import EmptyScopeSignalDetector, ScopeSignalDetector
+from medibot.video_api import create_video_router
+from medibot.video_store import VideoStore
 
 
 def create_app(
@@ -31,16 +37,18 @@ def create_app(
     emergency_registry: EmergencyResourceRegistry | None = None,
     emergency_signal_detector: EmergencySignalDetector | None = None,
     scope_signal_detector: ScopeSignalDetector | None = None,
+    video_store: VideoStore | None = None,
+    artifact_store: LocalArtifactStore | None = None,
+    video_clock: Callable[[], datetime] | None = None,
+    video_renderer_factory: Callable[[], LocalVerticalVideoRenderer] | None = None,
 ) -> FastAPI:
     settings = app_settings or get_settings()
-    repository = (
-        content_repository if content_repository is not None else EmptyContentRepository()
-    )
+    videos = video_store or VideoStore(settings.video_database_path)
+    video_artifacts = artifact_store or LocalArtifactStore(settings.artifact_directory)
+    repository = content_repository if content_repository is not None else EmptyContentRepository()
     policies = policy_repository if policy_repository is not None else EmptyPolicyRepository()
     emergency_resources = (
-        emergency_registry
-        if emergency_registry is not None
-        else EmptyEmergencyResourceRegistry()
+        emergency_registry if emergency_registry is not None else EmptyEmergencyResourceRegistry()
     )
     emergency_detector = (
         emergency_signal_detector
@@ -48,9 +56,7 @@ def create_app(
         else EmptyEmergencySignalDetector()
     )
     scope_detector = (
-        scope_signal_detector
-        if scope_signal_detector is not None
-        else EmptyScopeSignalDetector()
+        scope_signal_detector if scope_signal_detector is not None else EmptyScopeSignalDetector()
     )
     application = FastAPI(
         title=settings.app_name,
@@ -64,6 +70,8 @@ def create_app(
     application.state.emergency_registry = emergency_resources
     application.state.emergency_signal_detector = emergency_detector
     application.state.scope_signal_detector = scope_detector
+    application.state.video_store = videos
+    application.state.video_artifacts = video_artifacts
     application.state.message_orchestrator = MessageOrchestrator(
         policy_repository=policies,
         emergency_signal_detector=emergency_detector,
@@ -89,9 +97,23 @@ def create_app(
         StaticFiles(directory=static_directory),
         name="assets",
     )
+    if settings.environment in {"local", "test"}:
+        application.mount(
+            "/artifacts",
+            StaticFiles(directory=video_artifacts.root),
+            name="artifacts",
+        )
 
     @application.get("/", include_in_schema=False, response_class=FileResponse)
     def user_interface() -> FileResponse:
+        return FileResponse(static_directory / "video.html", media_type="text/html")
+
+    @application.get("/video", include_in_schema=False, response_class=FileResponse)
+    def video_interface() -> FileResponse:
+        return FileResponse(static_directory / "video.html", media_type="text/html")
+
+    @application.get("/legacy", include_in_schema=False, response_class=FileResponse)
+    def legacy_interface() -> FileResponse:
         return FileResponse(static_directory / "index.html", media_type="text/html")
 
     @application.exception_handler(RequestValidationError)
@@ -173,6 +195,15 @@ def create_app(
             content=result.response.model_dump(),
         )
 
+    application.include_router(
+        create_video_router(
+            settings,
+            videos,
+            video_artifacts,
+            clock=video_clock,
+            renderer_factory=video_renderer_factory,
+        )
+    )
     return application
 
 

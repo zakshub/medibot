@@ -1,0 +1,176 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Operator studio for domain-locked medical video automation.">
+  <title>MediLoop Video Studio</title>
+  <link rel="stylesheet" href="/assets/video.css">
+  <script src="/assets/video.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="MediLoop home">
+      <span class="brand-mark">M//L</span>
+      <span><strong>MEDILOOP</strong><small>SELF-LEARNING VIDEO STUDIO</small></span>
+    </a>
+    <div class="top-actions">
+      <span class="live-chip"><i aria-hidden="true"></i><span id="service-state">CONNECTING</span></span>
+      <a href="/docs">API DOCS</a>
+      <a href="/legacy">LEGACY BOT</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">DOMAIN-LOCKED / MEDICAL / AUTOMATED</p>
+        <h1 id="hero-title">A video system that <em>learns</em>, without leaving its lane.</h1>
+        <p class="lede">Import reviewed examples. Generate guarded previews. Schedule one to five
+          posts. Feed results back into the next decision.</p>
+      </div>
+      <div class="progress-seal" aria-label="Current implementation progress">
+        <span id="implementation-percent">--</span>
+        <small>IMPLEMENTED</small>
+      </div>
+    </section>
+
+    <section class="metric-grid" aria-label="System metrics">
+      <article><span>DATASET</span><strong id="video-count">0</strong><small>videos registered</small></article>
+      <article><span>LEARNING</span><strong id="insight-count">0</strong><small>insight records</small></article>
+      <article><span>QUEUE</span><strong id="decision-count">0</strong><small>schedule decisions</small></article>
+      <article class="blocked"><span>LIVE PUBLISH</span><strong id="production-state">LOCKED</strong><small>credentials required</small></article>
+    </section>
+
+    <section class="pipeline" aria-labelledby="pipeline-title">
+      <div class="section-heading">
+        <p>01 / SYSTEM MAP</p>
+        <h2 id="pipeline-title">From examples to adaptation</h2>
+      </div>
+      <ol>
+        <li class="done"><b>01</b><span>Dataset<strong>Learn the boundaries</strong></span></li>
+        <li class="done"><b>02</b><span>Plan<strong>Choose topic + format</strong></span></li>
+        <li class="done"><b>03</b><span>Render<strong>Preview MP4 locally</strong></span></li>
+        <li class="done"><b>04</b><span>Schedule<strong>Respect anti-spam limits</strong></span></li>
+        <li class="partial"><b>05</b><span>Publish<strong>Adapters ready, keys absent</strong></span></li>
+        <li class="done"><b>06</b><span>Adapt<strong>Reward the results</strong></span></li>
+      </ol>
+    </section>
+
+    <div class="workspace">
+      <section class="stack" aria-labelledby="setup-title">
+        <div class="section-heading">
+          <p>02 / CONTROL</p>
+          <h2 id="setup-title">Define the lane</h2>
+        </div>
+
+        <form id="domain-form" class="panel form-grid" autocomplete="off">
+          <div class="panel-title"><span>DOMAIN POLICY</span><b>Required first</b></div>
+          <label>Profile name<input id="domain-name" value="medical" maxlength="100" required></label>
+          <label>Allowed topics<input id="allowed-topics" value="sleep health,nutrition" required></label>
+          <label>Allowed keywords<textarea id="allowed-keywords" rows="3" required>sleep,health,nutrition,medical,review</textarea></label>
+          <label>Blocked keywords<input id="blocked-keywords" value="casino,crypto,gambling"></label>
+          <button type="submit">SAVE DOMAIN POLICY <span aria-hidden="true">-&gt;</span></button>
+        </form>
+
+        <form id="dataset-form" class="panel" autocomplete="off">
+          <div class="panel-title"><span>INITIAL DATASET</span><b>JSON manifest</b></div>
+          <label for="dataset-json">Dataset manifest</label>
+          <textarea id="dataset-json" class="code-field" rows="16" spellcheck="false">{
+  "schema_version": 1,
+  "domain": {
+    "name": "medical",
+    "allowed_topics": ["sleep health"],
+    "allowed_keywords": ["sleep", "health", "medical", "review"],
+    "blocked_keywords": ["casino", "crypto"]
+  },
+  "videos": [{
+    "candidate_id": "sleep-seed-001",
+    "topic": "sleep health",
+    "title": "Reviewed sleep workflow",
+    "script": "Medical sleep content requires health review before publishing.",
+    "duration_seconds": 8,
+    "language": "en",
+    "style_tags": ["vertical-explainer"]
+  }]
+}</textarea>
+          <button type="submit">IMPORT DATASET <span aria-hidden="true">-&gt;</span></button>
+        </form>
+      </section>
+
+      <section class="stack" aria-labelledby="generate-title">
+        <div class="section-heading">
+          <p>03 / CREATE</p>
+          <h2 id="generate-title">Build a reviewed preview</h2>
+        </div>
+
+        <form id="preview-form" class="panel form-grid" autocomplete="off">
+          <div class="panel-title"><span>CONTENT BRIEF</span><b>MP4 + storyboard</b></div>
+          <label>Profile<input id="preview-profile" value="medical" required></label>
+          <label>Content ID<input id="content-id" value="sleep-preview-001" pattern="[A-Za-z0-9._-]+" required></label>
+          <label>Topic<input id="preview-topic" value="sleep health" required></label>
+          <label>Title<input id="preview-title" value="How reviewed sleep content works" required></label>
+          <label class="wide">Hook<input id="preview-hook" value="Safe medical videos start with reviewed facts." required></label>
+          <label class="wide">Approved fact<textarea id="fact-text" rows="3" required>Medical content in this workflow must be reviewed before publishing.</textarea></label>
+          <label>Source URL<input id="fact-source" type="url" value="https://www.who.int/" required></label>
+          <label>Fact approval ID<input id="fact-approval" value="demo-review-001" required></label>
+          <label class="wide">Call to action<input id="preview-cta" value="Follow for reviewed medical education." required></label>
+          <label>Duration (seconds)<input id="preview-duration" type="number" min="1" max="30" value="6" required></label>
+          <label>Style<input id="preview-style" value="vertical-explainer" required></label>
+          <label class="check wide"><input id="medical-approved" type="checkbox" checked> Medical review is approved for this supplied fact</label>
+          <button type="submit">GENERATE LOCAL MP4 <span aria-hidden="true">-&gt;</span></button>
+        </form>
+
+        <article id="preview-output" class="panel preview-output" hidden>
+          <div class="panel-title"><span>LATEST OUTPUT</span><b id="preview-badge">PREVIEW ONLY</b></div>
+          <video id="preview-video" controls preload="metadata"></video>
+          <div class="output-links">
+            <a id="storyboard-link" href="#" target="_blank" rel="noopener">OPEN STORYBOARD</a>
+            <span id="preview-meta"></span>
+          </div>
+        </article>
+      </section>
+    </div>
+
+    <section class="inventory" aria-labelledby="inventory-title">
+      <div class="section-heading row-heading">
+        <div><p>04 / LIBRARY</p><h2 id="inventory-title">Video inventory</h2></div>
+        <button id="refresh-button" type="button" class="quiet">REFRESH</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Topic</th><th>Style</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="inventory-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="decision-board" aria-labelledby="decision-title">
+      <div>
+        <p class="eyebrow">05 / NEXT DECISION</p>
+        <h2 id="decision-title">Let evidence choose the slot.</h2>
+        <p>Cold start stays at one post per day. Strong evidence can raise frequency one step at a time.</p>
+      </div>
+      <form id="schedule-form" autocomplete="off">
+        <label>Profile<input id="schedule-profile" value="medical" required></label>
+        <label>Current daily target<input id="daily-target" type="number" min="1" max="5" value="1" required></label>
+        <button type="submit">RECOMMEND + RESERVE</button>
+      </form>
+      <div id="schedule-result" class="decision-result" aria-live="polite">No decision requested yet.</div>
+    </section>
+
+    <section class="activity" aria-labelledby="activity-title">
+      <div class="section-heading"><p>06 / TRACE</p><h2 id="activity-title">Operator activity</h2></div>
+      <ol id="activity-log" aria-live="polite"></ol>
+    </section>
+  </main>
+
+  <footer>
+    <p>MediLoop operates fail-closed. No live platform call is made without credentials,
+      review approval, a matching artifact hash, and narration audio.</p>
+    <label>Operator key (production only)
+      <input id="operator-key" type="password" autocomplete="off">
+    </label>
+  </footer>
+</body>
+</html>

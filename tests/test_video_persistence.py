@@ -1,4 +1,4 @@
-﻿import json
+import json
 import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
@@ -79,9 +79,7 @@ def test_manifest_rejects_unsafe_or_invalid_source(tmp_path: Path, source: str) 
 
 def test_video_store_persists_complete_learning_state(tmp_path: Path) -> None:
     store = VideoStore(tmp_path / "data" / "video.db")
-    profile = DomainProfile(
-        "medical", frozenset({"sleep"}), frozenset({"sleep", "health"})
-    )
+    profile = DomainProfile("medical", frozenset({"sleep"}), frozenset({"sleep", "health"}))
     now = datetime(2026, 1, 1, 12, tzinfo=UTC)
     candidate = VideoCandidate(
         "video-1",
@@ -110,12 +108,13 @@ def test_video_store_persists_complete_learning_state(tmp_path: Path) -> None:
     assert store.list_publish_times() == [now]
     assert store.counts() == {"videos": 1, "insights": 1, "decisions": 1}
 
-    store.set_video_status("video-1", "approved")
-    assert store.list_candidates(status="approved") == [candidate]
-    with pytest.raises(ValueError, match="unknown video status"):
-        store.set_video_status("video-1", "deleted")
-    with pytest.raises(KeyError):
-        store.set_video_status("missing", "approved")
+    with pytest.raises(ValueError, match="rendered, hash-verified"):
+        store.approve_video(
+            "video-1",
+            medical_review_id="review-1",
+            approved_by="reviewer",
+            approved_at=now,
+        )
 
 
 def test_video_store_registration_is_atomic(tmp_path: Path) -> None:
@@ -141,3 +140,54 @@ def test_store_rolls_back_database_errors(tmp_path: Path) -> None:
         store.register_candidates(profile, [candidate], imported_at=now)
     assert store.counts()["videos"] == 1
 
+
+def test_render_approval_and_schedule_transitions_are_guarded(tmp_path: Path) -> None:
+    store = VideoStore(tmp_path / "video.db")
+    profile = DomainProfile("medical", frozenset({"sleep"}), frozenset({"sleep"}))
+    now = datetime(2026, 1, 1, 8, tzinfo=UTC)
+    candidate = VideoCandidate(
+        "rendered-1",
+        "sleep",
+        "Sleep facts",
+        "Sleep facts reviewed",
+        source_path="previews/rendered-1/preview.mp4",
+        duration_seconds=15,
+        asset_sha256="a" * 64,
+    )
+    store.register_candidates(
+        profile,
+        [candidate],
+        imported_at=now,
+        initial_status="rendered",
+    )
+
+    store.approve_video(
+        candidate.candidate_id,
+        medical_review_id="review-1",
+        approved_by="reviewer",
+        approved_at=now,
+    )
+    assert store.list_candidates(status="approved") == [candidate]
+
+    decision = ScheduleDecision(candidate.candidate_id, now, 0.8, ("reviewed",))
+    store.reserve_schedule_decision(decision, created_at=now)
+    assert store.list_candidates(status="scheduled") == [candidate]
+    assert store.list_schedule_entries() == [(candidate.candidate_id, now)]
+
+    with pytest.raises(ValueError, match="no longer available"):
+        store.reserve_schedule_decision(decision, created_at=now)
+    assert store.counts()["decisions"] == 1
+
+
+def test_rendered_registration_requires_artifact_proof(tmp_path: Path) -> None:
+    store = VideoStore(tmp_path / "video.db")
+    profile = DomainProfile("medical", frozenset({"sleep"}), frozenset({"sleep"}))
+    candidate = VideoCandidate("video-1", "sleep", "Sleep", "Sleep reviewed")
+
+    with pytest.raises(ValueError, match="artifact path and SHA-256"):
+        store.register_candidates(
+            profile,
+            [candidate],
+            imported_at=datetime(2026, 1, 1, tzinfo=UTC),
+            initial_status="rendered",
+        )

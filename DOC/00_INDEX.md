@@ -2,7 +2,7 @@
 
 This folder is the master documentation set for the `medic` project.
 
-Last updated: 2026-08-03
+Last updated: 2026-08-04
 
 ## Reading Order
 
@@ -46,6 +46,7 @@ Last updated: 2026-08-03
 38. [38_Local_Vertical_MP4_Renderer.md](./38_Local_Vertical_MP4_Renderer.md)
 39. [39_Online_Learning_And_Automation_Planner.md](./39_Online_Learning_And_Automation_Planner.md)
 40. [40_Multi_Platform_Publishing_And_Insights.md](./40_Multi_Platform_Publishing_And_Insights.md)
+41. [41_Operator_Dashboard_And_API.md](./41_Operator_Dashboard_And_API.md)
 
 ## Folder Purpose
 

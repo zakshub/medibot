@@ -39,4 +39,10 @@ Thumbs.db
 data/private/
 data/uploads/
 data/exports/
+data/artifacts/*
+!data/artifacts/README.md
+data/dataset/*
+!data/dataset/README.md
+data/runtime/*
+!data/runtime/README.md
 .test-tmp/

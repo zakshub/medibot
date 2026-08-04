@@ -86,3 +86,14 @@
 82. Added trusted upload-host, platform-ID, artifact-hash, audio, and approval gates
 83. Added four-platform insight normalization into the online-learning reward contract
 84. Added persistent concurrent-safe publication idempotency and bounded retries
+85. Added the responsive MediLoop operator dashboard as the root product UI
+86. Preserved the earlier chatbot UI under the `/legacy` route
+87. Added authenticated operator APIs for domain, dataset, preview, approval, insight, and schedule workflows
+88. Restricted production operator reads and disabled unauthenticated production artifact mounting
+89. Prevented imported seed examples from bypassing render and hash verification before approval
+90. Made schedule reservation and status transition one atomic database transaction
+91. Fixed cold-start timing to select the earliest equally scored safe slot
+92. Fixed local MP4 encoding to preserve exact declared dimensions without FFmpeg resizing
+93. Added end-to-end tests from seed import through rendered approval, scheduling, and learning insight
+94. Visually verified desktop and 390-pixel mobile layouts with live API state and no overflow
+95. Rewrote the repository entry point and status tracker around the actual video automation product

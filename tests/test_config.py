@@ -30,7 +30,22 @@ def test_production_debug_is_prohibited() -> None:
         Settings(environment="production", debug=True, _env_file=None)
 
 
+def test_production_requires_operator_api_key() -> None:
+    with pytest.raises(ValidationError, match="operator API key is required"):
+        Settings(environment="production", _env_file=None)
+
+
+def test_production_accepts_configured_operator_api_key() -> None:
+    settings = Settings(
+        environment="production",
+        operator_api_key="synthetic-operator-secret",
+        _env_file=None,
+    )
+
+    assert settings.operator_api_key is not None
+    assert settings.operator_api_key.get_secret_value() == "synthetic-operator-secret"
+
+
 def test_policy_version_rejects_unsafe_characters() -> None:
     with pytest.raises(ValidationError):
         Settings(policy_version="release 1/<script>", _env_file=None)
-

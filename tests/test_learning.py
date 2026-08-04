@@ -1,4 +1,4 @@
-﻿import pytest
+import pytest
 
 from medibot.learning import (
     ContentVariant,
@@ -47,9 +47,7 @@ def test_reward_is_bounded_and_weighted() -> None:
     )
     assert saturated.reward == 1
     with pytest.raises(ValueError, match="negative"):
-        LearningObservation.from_metrics(
-            variant, impressions=-1, views=0, average_watch_ratio=0
-        )
+        LearningObservation.from_metrics(variant, impressions=-1, views=0, average_watch_ratio=0)
     with pytest.raises(ValueError, match="between zero"):
         LearningObservation(variant, 1.1)
 
@@ -65,6 +63,20 @@ def test_learner_explores_unseen_allowed_variant() -> None:
     assert result.mode == "explore"
     assert result.observations == 0
     assert "domain_allowlist_enforced" in result.reasons
+
+
+def test_learner_uses_earliest_hour_when_cold_start_scores_tie() -> None:
+    profile_value = DomainProfile("medical", frozenset({"sleep"}), frozenset({"sleep"}))
+    tied = [
+        ContentVariant("sleep", 18, "explainer", "short"),
+        ContentVariant("sleep", 9, "explainer", "short"),
+        ContentVariant("sleep", 13, "explainer", "short"),
+    ]
+
+    result = OnlineStrategyLearner().recommend(tied, [], profile_value)
+
+    assert result is not None
+    assert result.variant.posting_hour == 9
 
 
 def test_learner_exploits_after_enough_evidence_and_excludes_domain() -> None:
@@ -135,4 +147,3 @@ def test_frequency_never_leaves_limits_or_accepts_bad_data() -> None:
         DailyPerformance(1, 2)
     with pytest.raises(ValueError, match="incident"):
         DailyPerformance(1, 0.5, -1)
-
