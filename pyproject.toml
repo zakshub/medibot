@@ -20,7 +20,7 @@ medibot-evaluate-emergency = "medibot.evaluation:main"
 [project.optional-dependencies]
 media = [
   "imageio-ffmpeg>=0.6,<1",
-  "pillow>=10,<13",
+  "pillow>=10,<14",
 ]
 cloud = [
   "boto3>=1.35,<2",
